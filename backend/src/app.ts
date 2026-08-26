@@ -26,14 +26,16 @@ export function createApp(container: AppContainer): Express {
 
   // CORS — allow all origins (frontend on Vercel, local dev, etc.)
   const corsOptions = {
-    origin: true, // reflect the request origin (allows all origins)
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+ origin: [
+    "https://room-management-eight.vercel.app",
+    "http://localhost:5173",
+  ],    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: false,
     optionsSuccessStatus: 200,
   };
   app.use(cors(corsOptions));
-  app.options("/.*/", cors(corsOptions)); // handle preflight for all routes
+  // app.options("/.*/", cors(corsOptions)); // handle preflight for all routes
   app.use(express.json());
 
   // Health check endpoint
