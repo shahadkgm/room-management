@@ -17,7 +17,7 @@ export class InMemoryPatientRepository implements IPatientRepository {
         (p) =>
           p.name.toLowerCase().includes(q) ||
           p.phone.includes(q) ||
-          p.ailment.toLowerCase().includes(q) ||
+          (p.ailment || "").toLowerCase().includes(q) ||
           p.address.toLowerCase().includes(q)
       );
     }

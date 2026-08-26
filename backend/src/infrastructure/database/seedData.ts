@@ -130,8 +130,6 @@ export async function seedInitialData(
         admissionDate: formatDate(yesterday),
         expectedDischargeDate: formatDate(inTwoDays),
         status: "active",
-        dailyRate: room102.dailyRate,
-        notes: "Currently undergoing Steam Bath (Hammam) session.",
       });
 
       await bookingRepo.create({
@@ -140,8 +138,6 @@ export async function seedInitialData(
         admissionDate: formatDate(inFourDays),
         expectedDischargeDate: formatDate(inTenDays),
         status: "reserved",
-        dailyRate: room102.dailyRate,
-        notes: "Follow-up stay for Hijama second cycle.",
       });
     }
 
@@ -152,8 +148,6 @@ export async function seedInitialData(
         admissionDate: formatDate(yesterday),
         expectedDischargeDate: formatDate(inFourDays),
         status: "active",
-        dailyRate: room103.dailyRate,
-        notes: "Arthritis rehabilitation regimen.",
       });
 
       await bookingRepo.create({
@@ -162,8 +156,6 @@ export async function seedInitialData(
         admissionDate: formatDate(inFourDays),
         expectedDischargeDate: formatDate(inTenDays),
         status: "reserved",
-        dailyRate: room103.dailyRate,
-        notes: "Skin therapy regimen admission.",
       });
     }
 
@@ -174,8 +166,6 @@ export async function seedInitialData(
         admissionDate: formatDate(yesterday),
         expectedDischargeDate: formatDate(inTenDays),
         status: "active",
-        dailyRate: room105.dailyRate,
-        notes: "Digestive detox stay.",
       });
     }
 

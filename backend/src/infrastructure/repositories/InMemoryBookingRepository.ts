@@ -36,7 +36,7 @@ export class InMemoryBookingRepository implements IBookingRepository {
       .sort((a, b) => new Date(a.admissionDate).getTime() - new Date(b.admissionDate).getTime());
   }
 
-  async create(booking: CreateBookingDTO & { status: BookingStatus; dailyRate: number }): Promise<IBooking> {
+  async create(booking: CreateBookingDTO & { status: BookingStatus }): Promise<IBooking> {
     const id = "bk_" + Math.random().toString(36).substring(2, 9) + Date.now();
     const now = new Date();
     const newBooking: IBooking = {
@@ -46,9 +46,6 @@ export class InMemoryBookingRepository implements IBookingRepository {
       admissionDate: booking.admissionDate,
       expectedDischargeDate: booking.expectedDischargeDate,
       status: booking.status,
-      notes: booking.notes || "",
-      dailyRate: booking.dailyRate,
-      totalAmount: 0,
       createdAt: now,
       updatedAt: now,
     };
@@ -68,21 +65,14 @@ export class InMemoryBookingRepository implements IBookingRepository {
     return updated;
   }
 
-  async discharge(id: string, actualDischargeDate: string, notes?: string): Promise<IBooking | null> {
+  async discharge(id: string, actualDischargeDate: string): Promise<IBooking | null> {
     const existing = this.bookings.get(id);
     if (!existing) return null;
-
-    const start = new Date(existing.admissionDate).getTime();
-    const end = new Date(actualDischargeDate).getTime();
-    const days = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
-    const totalAmount = days * existing.dailyRate;
 
     const updated: IBooking = {
       ...existing,
       actualDischargeDate,
       status: "completed",
-      totalAmount,
-      ...(notes ? { notes } : {}),
       updatedAt: new Date(),
     };
     this.bookings.set(id, updated);

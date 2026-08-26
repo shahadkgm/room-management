@@ -40,7 +40,6 @@ export class BookingService implements IBookingService {
             ward: room.ward,
             floor: room.floor,
             bedCount: room.bedCount,
-            dailyRate: room.dailyRate,
           }
         : undefined,
     };
@@ -80,7 +79,6 @@ export class BookingService implements IBookingService {
 
     return this.bookingRepository.create({
       ...dto,
-      dailyRate: dto.dailyRate || room.dailyRate,
       status: initialStatus,
     });
   }
@@ -112,8 +110,6 @@ export class BookingService implements IBookingService {
       roomId: room.id,
       admissionDate: dto.admissionDate,
       expectedDischargeDate: dto.expectedDischargeDate,
-      notes: dto.notes,
-      dailyRate: room.dailyRate,
       status: initialStatus,
     });
 
@@ -127,7 +123,7 @@ export class BookingService implements IBookingService {
       throw new Error("Patient is already discharged or booking is cancelled.");
     }
 
-    const discharged = await this.bookingRepository.discharge(bookingId, dto.actualDischargeDate, dto.notes);
+    const discharged = await this.bookingRepository.discharge(bookingId, dto.actualDischargeDate);
     if (!discharged) throw new Error("Failed to discharge patient.");
     return discharged;
   }

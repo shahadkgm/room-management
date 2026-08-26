@@ -34,6 +34,7 @@ import { RoomController } from "./controllers/RoomController";
 import { BookingController } from "./controllers/BookingController";
 import { PatientController } from "./controllers/PatientController";
 import { DashboardController } from "./controllers/DashboardController";
+import { UserController } from "./controllers/UserController";
 
 import { createAuthMiddleware } from "./middleware/authMiddleware";
 import { DatabaseManager } from "./infrastructure/database/connection";
@@ -65,6 +66,7 @@ export interface AppContainer {
   bookingController: BookingController;
   patientController: PatientController;
   dashboardController: DashboardController;
+  userController: UserController;
 
   // Middleware
   authMiddleware: ReturnType<typeof createAuthMiddleware>;
@@ -146,6 +148,7 @@ export async function createContainer(): Promise<AppContainer> {
   const bookingController = new BookingController(bookingService);
   const patientController = new PatientController(patientService);
   const dashboardController = new DashboardController(dashboardService);
+  const userController = new UserController(userRepository);
 
   // 6. Auth middleware factory — receives token service via closure (DIP)
   const authMiddleware = createAuthMiddleware(tokenService);
@@ -169,6 +172,7 @@ export async function createContainer(): Promise<AppContainer> {
     bookingController,
     patientController,
     dashboardController,
+    userController,
     authMiddleware,
   };
 }

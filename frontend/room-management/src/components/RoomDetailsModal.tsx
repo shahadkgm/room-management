@@ -19,7 +19,6 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
   const [roomData, setRoomData] = useState<RoomWithBookings | null>(null);
   const [loading, setLoading] = useState(true);
   const [dischargeDates, setDischargeDates] = useState<{ [bookingId: string]: string }>({});
-  const [dischargeNotes] = useState<{ [bookingId: string]: string }>({});
   const [isDischarging, setIsDischarging] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -67,8 +66,7 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
       setIsDischarging(bookingId);
       setErrorMsg(null);
       const date = dischargeDates[bookingId] || new Date().toISOString().split("T")[0];
-      const notes = dischargeNotes[bookingId];
-      await api.dischargePatient(bookingId, date, notes);
+      await api.dischargePatient(bookingId, date);
       setSuccessMsg("Patient discharged successfully. Room freed!");
       onRefresh();
       await fetchDetails();
@@ -226,13 +224,6 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
                       <div style={{ display: "flex", gap: "8px", fontSize: "12.5px" }}>
                         <span style={{ color: "#94a3b8", fontWeight: 600 }}>Address:</span>
                         <span style={{ color: "#475569" }}>{booking.patient.address}</span>
-                      </div>
-                    )}
-
-                    {booking.notes && (
-                      <div style={{ display: "flex", gap: "8px", fontSize: "12.5px" }}>
-                        <span style={{ color: "#94a3b8", fontWeight: 600 }}>Notes:</span>
-                        <span style={{ color: "#475569" }}>{booking.notes}</span>
                       </div>
                     )}
 

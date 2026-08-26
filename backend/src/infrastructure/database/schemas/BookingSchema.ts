@@ -14,9 +14,6 @@ const bookingMongooseSchema = new Schema<IBooking>(
       required: true,
       default: "active",
     },
-    notes: { type: String, default: "" },
-    dailyRate: { type: Number, required: true },
-    totalAmount: { type: Number, default: 0 },
   },
   {
     timestamps: true,

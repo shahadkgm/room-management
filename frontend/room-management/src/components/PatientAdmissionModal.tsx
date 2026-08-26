@@ -55,7 +55,6 @@ export const PatientAdmissionModal: React.FC<PatientAdmissionModalProps> = ({
         roomId,
         admissionDate,
         expectedDischargeDate,
-        notes,
         patient: {
           name,
           age: Number(age),
@@ -193,13 +192,12 @@ export const PatientAdmissionModal: React.FC<PatientAdmissionModalProps> = ({
               </div>
 
               <div className="form-field">
-                <label>Ailment / Diagnosis (Unani Diagnosis) *</label>
+                <label>Ailment / Diagnosis (Unani Diagnosis)</label>
                 <input
                   type="text"
                   placeholder="e.g. Chronic Migraine (Suda Muzmin)"
                   value={ailment}
                   onChange={(e) => setAilment(e.target.value)}
-                  required
                 />
               </div>
             </div>

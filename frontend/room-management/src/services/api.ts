@@ -1,6 +1,6 @@
 import type { Room, RoomWithBookings, Patient, Booking, DashboardStats, User } from "../types";
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 class ApiService {
   private token: string | null = localStorage.getItem("room_harmony_token");
@@ -133,7 +133,6 @@ class ApiService {
     roomId: string;
     admissionDate: string;
     expectedDischargeDate: string;
-    notes?: string;
   }): Promise<Booking> {
     return this.request<Booking>("/bookings", {
       method: "POST",
@@ -148,13 +147,12 @@ class ApiService {
       gender: string;
       phone: string;
       address: string;
-      ailment: string;
+      ailment?: string;
       notes?: string;
     };
     roomId: string;
     admissionDate: string;
     expectedDischargeDate: string;
-    notes?: string;
   }): Promise<{ booking: Booking; patientId: string }> {
     return this.request<{ booking: Booking; patientId: string }>("/bookings/direct-admit", {
       method: "POST",
@@ -162,10 +160,10 @@ class ApiService {
     });
   }
 
-  async dischargePatient(bookingId: string, actualDischargeDate: string, notes?: string): Promise<Booking> {
+  async dischargePatient(bookingId: string, actualDischargeDate: string): Promise<Booking> {
     return this.request<Booking>(`/bookings/${bookingId}/discharge`, {
       method: "POST",
-      body: JSON.stringify({ actualDischargeDate, notes }),
+      body: JSON.stringify({ actualDischargeDate }),
     });
   }
 
@@ -194,6 +192,22 @@ class ApiService {
 
   async deletePatient(id: string): Promise<void> {
     await this.request(`/patients/${id}`, { method: "DELETE" });
+  }
+
+  // Users (Admin)
+  async getUsers(): Promise<User[]> {
+    return this.request<User[]>("/users");
+  }
+
+  async updateUserAllowance(id: string, isAllowed: boolean): Promise<User> {
+    return this.request<User>(`/users/${id}/allow`, {
+      method: "PUT",
+      body: JSON.stringify({ isAllowed }),
+    });
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    await this.request(`/users/${id}`, { method: "DELETE" });
   }
 }
 

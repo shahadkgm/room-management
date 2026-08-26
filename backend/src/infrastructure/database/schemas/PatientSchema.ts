@@ -8,7 +8,7 @@ const patientMongooseSchema = new Schema<IPatient>(
     gender: { type: String, enum: ["male", "female", "other"], required: true },
     phone: { type: String, required: true },
     address: { type: String, required: true },
-    ailment: { type: String, required: true },
+    ailment: { type: String, default: "" },
     notes: { type: String, default: "" },
   },
   {

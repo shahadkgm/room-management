@@ -7,7 +7,7 @@ export interface IPatient {
   gender: Gender;
   phone: string;
   address: string;
-  ailment: string;
+  ailment?: string;
   notes?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -19,7 +19,7 @@ export interface CreatePatientDTO {
   gender: Gender;
   phone: string;
   address: string;
-  ailment: string;
+  ailment?: string;
   notes?: string;
 }
 

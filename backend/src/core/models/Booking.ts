@@ -8,9 +8,6 @@ export interface IBooking {
   expectedDischargeDate: string; // YYYY-MM-DD
   actualDischargeDate?: string; // YYYY-MM-DD
   status: BookingStatus;
-  notes?: string;
-  dailyRate: number;
-  totalAmount?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,8 +17,6 @@ export interface CreateBookingDTO {
   roomId: string;
   admissionDate: string;
   expectedDischargeDate: string;
-  notes?: string;
-  dailyRate?: number;
 }
 
 export interface DirectAdmissionDTO {
@@ -31,18 +26,16 @@ export interface DirectAdmissionDTO {
     gender: "male" | "female" | "other";
     phone: string;
     address: string;
-    ailment: string;
+    ailment?: string;
     notes?: string;
   };
   roomId: string;
   admissionDate: string;
   expectedDischargeDate: string;
-  notes?: string;
 }
 
 export interface DischargePatientDTO {
   actualDischargeDate: string;
-  notes?: string;
 }
 
 export interface PopulatedBooking extends IBooking {
@@ -53,7 +46,7 @@ export interface PopulatedBooking extends IBooking {
     gender: string;
     phone: string;
     address: string;
-    ailment: string;
+    ailment?: string;
     notes?: string;
   };
   room?: {
@@ -62,6 +55,5 @@ export interface PopulatedBooking extends IBooking {
     ward: string;
     floor: number;
     bedCount: number;
-    dailyRate: number;
   };
 }

@@ -38,7 +38,6 @@ export class DashboardService implements IDashboardService {
             ward: room.ward,
             floor: room.floor,
             bedCount: room.bedCount,
-            dailyRate: room.dailyRate,
           }
         : undefined,
     };

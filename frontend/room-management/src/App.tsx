@@ -10,6 +10,7 @@ import { PatientDirectoryView } from "./components/PatientDirectoryView";
 import { AdminRoomManagerModal } from "./components/AdminRoomManagerModal";
 import { RoomDetailsModal } from "./components/RoomDetailsModal";
 import { PatientAdmissionModal } from "./components/PatientAdmissionModal";
+import { UserManagementView } from "./components/UserManagementView";
 import { LoginPage } from "./components/LoginPage";
 import type { Room, DashboardStats } from "./types";
 import { api } from "./services/api";
@@ -71,6 +72,8 @@ const MainAppContent: React.FC = () => {
         return "Patient Management & Directory";
       case "admin-rooms":
         return "Hospital Room & Ward Controls";
+      case "user-management":
+        return "User Management & Approvals";
       default:
         return "Room Management";
     }
@@ -141,6 +144,10 @@ const MainAppContent: React.FC = () => {
 
               {activeTab === "admin-rooms" && (
                 <AdminRoomManagerModal rooms={rooms} onRefresh={loadData} />
+              )}
+
+              {activeTab === "user-management" && (
+                <UserManagementView />
               )}
             </>
           )}

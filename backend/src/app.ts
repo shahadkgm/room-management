@@ -8,6 +8,7 @@ import { createRoomRoutes } from "./routes/roomRoutes";
 import { createBookingRoutes } from "./routes/bookingRoutes";
 import { createPatientRoutes } from "./routes/patientRoutes";
 import { createDashboardRoutes } from "./routes/dashboardRoutes";
+import { createUserRoutes } from "./routes/userRoutes";
 import { errorHandler } from "./middleware/errorHandler";
 
 export function createApp(container: AppContainer): Express {
@@ -42,6 +43,7 @@ export function createApp(container: AppContainer): Express {
   app.use("/api/bookings", createBookingRoutes(container.bookingController, container.authMiddleware));
   app.use("/api/patients", createPatientRoutes(container.patientController, container.authMiddleware));
   app.use("/api/dashboard", createDashboardRoutes(container.dashboardController, container.authMiddleware));
+  app.use("/api/users", createUserRoutes(container.userController, container.tokenService));
 
   // Global Error Handler
   app.use(errorHandler);

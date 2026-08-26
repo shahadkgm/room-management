@@ -23,7 +23,7 @@ export class AuthService implements IAuthService {
       email: dto.email.toLowerCase(),
       passwordHash,
       role: dto.role || "receptionist",
-      isAllowed: true,
+      isAllowed: false,
     });
 
     const userDTO: UserDTO = {

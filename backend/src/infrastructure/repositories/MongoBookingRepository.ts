@@ -30,11 +30,9 @@ export class MongoBookingRepository implements IBookingRepository {
     return docs.map((d) => d.toJSON() as IBooking);
   }
 
-  async create(booking: CreateBookingDTO & { status: BookingStatus; dailyRate: number }): Promise<IBooking> {
+  async create(booking: CreateBookingDTO & { status: BookingStatus }): Promise<IBooking> {
     const doc = await BookingModel.create({
       ...booking,
-      notes: booking.notes || "",
-      totalAmount: 0,
     });
     return doc.toJSON() as IBooking;
   }
@@ -44,22 +42,15 @@ export class MongoBookingRepository implements IBookingRepository {
     return doc ? (doc.toJSON() as IBooking) : null;
   }
 
-  async discharge(id: string, actualDischargeDate: string, notes?: string): Promise<IBooking | null> {
+  async discharge(id: string, actualDischargeDate: string): Promise<IBooking | null> {
     const existing = await BookingModel.findById(id);
     if (!existing) return null;
-
-    const start = new Date(existing.admissionDate).getTime();
-    const end = new Date(actualDischargeDate).getTime();
-    const days = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
-    const totalAmount = days * existing.dailyRate;
 
     const doc = await BookingModel.findByIdAndUpdate(
       id,
       {
         actualDischargeDate,
         status: "completed",
-        totalAmount,
-        ...(notes ? { notes } : {}),
       },
       { new: true }
     );

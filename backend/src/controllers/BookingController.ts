@@ -34,7 +34,7 @@ export class BookingController {
 
   create = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { patientId, roomId, admissionDate, expectedDischargeDate, notes, dailyRate } = req.body;
+      const { patientId, roomId, admissionDate, expectedDischargeDate } = req.body;
       if (!patientId || !roomId || !admissionDate || !expectedDischargeDate) {
         res.status(400).json({
           success: false,
@@ -48,8 +48,6 @@ export class BookingController {
         roomId,
         admissionDate,
         expectedDischargeDate,
-        notes,
-        dailyRate: dailyRate ? Number(dailyRate) : undefined,
       });
       res.status(201).json({ success: true, data: booking });
     } catch (error: any) {
@@ -59,7 +57,7 @@ export class BookingController {
 
   directAdmit = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { patient, roomId, admissionDate, expectedDischargeDate, notes } = req.body;
+      const { patient, roomId, admissionDate, expectedDischargeDate } = req.body;
       if (!patient || !roomId || !admissionDate || !expectedDischargeDate) {
         res.status(400).json({
           success: false,
@@ -81,7 +79,6 @@ export class BookingController {
         roomId,
         admissionDate,
         expectedDischargeDate,
-        notes,
       });
       res.status(201).json({ success: true, data: result });
     } catch (error: any) {
@@ -92,12 +89,11 @@ export class BookingController {
   discharge = async (req: Request, res: Response): Promise<void> => {
     try {
       const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-      const { actualDischargeDate, notes } = req.body;
+      const { actualDischargeDate } = req.body;
       const dischargeDate = actualDischargeDate || new Date().toISOString().split("T")[0];
 
       const result = await this.bookingService.dischargePatient(id, {
         actualDischargeDate: dischargeDate,
-        notes,
       });
       res.status(200).json({ success: true, data: result, message: "Patient discharged successfully." });
     } catch (error: any) {

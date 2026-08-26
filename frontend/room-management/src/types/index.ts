@@ -4,8 +4,8 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: UserRole;
-  isAllowed?: boolean;
+  role: "admin" | "receptionist";
+  isAllowed: boolean;
 }
 
 export type RoomStatus = "available" | "occupied" | "reserved" | "maintenance";

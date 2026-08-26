@@ -8,9 +8,9 @@ export interface IBookingReader {
 }
 
 export interface IBookingWriter {
-  create(booking: CreateBookingDTO & { status: BookingStatus; dailyRate: number }): Promise<IBooking>;
+  create(booking: CreateBookingDTO & { status: BookingStatus }): Promise<IBooking>;
   update(id: string, updateData: Partial<IBooking>): Promise<IBooking | null>;
-  discharge(id: string, actualDischargeDate: string, notes?: string): Promise<IBooking | null>;
+  discharge(id: string, actualDischargeDate: string): Promise<IBooking | null>;
   cancel(id: string): Promise<IBooking | null>;
   delete(id: string): Promise<boolean>;
 }
