@@ -24,18 +24,19 @@ export function createApp(container: AppContainer): Express {
     legacyHeaders: false,
   });
 
-  // CORS — allow all origins (frontend on Vercel, local dev, etc.)
+  // CORS — allow all origins (Vercel preview/production, localhost, etc.)
   const corsOptions = {
- origin: [
-    "https://room-management-eight.vercel.app",
-    "http://localhost:5173",
-  ],    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      // allow requests with no origin (like mobile apps, curl, server-to-server) or any origin
+      callback(null, true);
+    },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: false,
+    credentials: true,
     optionsSuccessStatus: 200,
   };
   app.use(cors(corsOptions));
-  // app.options("/.*/", cors(corsOptions)); // handle preflight for all routes
+  app.options("*", cors(corsOptions));
   app.use(express.json());
 
   // Health check endpoint

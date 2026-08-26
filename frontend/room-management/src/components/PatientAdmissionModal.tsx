@@ -118,7 +118,7 @@ export const PatientAdmissionModal: React.FC<PatientAdmissionModalProps> = ({
           </div>
 
           {/* Dates Grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+          <div className="modal-grid-2">
             <div className="form-field">
               <label>Admission Date *</label>
               <input
@@ -144,7 +144,7 @@ export const PatientAdmissionModal: React.FC<PatientAdmissionModalProps> = ({
           <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: "14px", display: "flex", flexDirection: "column", gap: "12px" }}>
             <h4 style={{ fontSize: "13.5px", color: "#334155" }}>Patient Information</h4>
 
-            <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: "12px" }}>
+            <div className="modal-grid-3">
               <div className="form-field">
                 <label>Patient Full Name *</label>
                 <input
@@ -179,7 +179,7 @@ export const PatientAdmissionModal: React.FC<PatientAdmissionModalProps> = ({
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+            <div className="modal-grid-2">
               <div className="form-field">
                 <label>Phone Number *</label>
                 <input

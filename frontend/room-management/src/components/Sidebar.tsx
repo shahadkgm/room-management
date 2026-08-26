@@ -7,39 +7,73 @@ interface SidebarProps {
   activeTab: NavTab;
   setActiveTab: (tab: NavTab) => void;
   onOpenAdmission: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpenAdmission }) => {
+export const Sidebar: React.FC<SidebarProps> = ({
+  activeTab,
+  setActiveTab,
+  onOpenAdmission,
+  isOpen = false,
+  onClose,
+}) => {
   const { user, role, logout } = useAuth();
 
-  return (
-    <aside className="sidebar">
-      <div>
-        <div className="sidebar-brand">
-          <div className="brand-icon">🌿</div>
-          <div className="brand-info">
-            <h2>Unani Hospital</h2>
-            <p>Room Management</p>
-          </div>
-        </div>
+  const handleTabSelect = (tab: NavTab) => {
+    setActiveTab(tab);
+    if (onClose) onClose();
+  };
 
-        <nav className="sidebar-nav">
-          <button
-            className={`nav-item ${activeTab === "dashboard" ? "active" : ""}`}
-            onClick={() => setActiveTab("dashboard")}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-            </svg>
-            Dashboard
-          </button>
+  const handleAdmitClick = () => {
+    onOpenAdmission();
+    if (onClose) onClose();
+  };
+
+  return (
+    <>
+      <div
+        className={`sidebar-backdrop ${isOpen ? "open" : ""}`}
+        onClick={onClose}
+      />
+      <aside className={`sidebar ${isOpen ? "mobile-open" : ""}`}>
+        <div>
+          <div className="sidebar-brand">
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div className="brand-icon">🌿</div>
+              <div className="brand-info">
+                <h2>Unani Hospital</h2>
+                <p>Room Management</p>
+              </div>
+            </div>
+            {onClose && (
+              <button
+                className="sidebar-close-btn"
+                onClick={onClose}
+                title="Close Navigation"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          <nav className="sidebar-nav">
+            <button
+              className={`nav-item ${activeTab === "dashboard" ? "active" : ""}`}
+              onClick={() => handleTabSelect("dashboard")}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+              Dashboard
+            </button>
 
           <button
             className={`nav-item ${activeTab === "board" ? "active" : ""}`}
-            onClick={() => setActiveTab("board")}
+            onClick={() => handleTabSelect("board")}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -50,7 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
 
           <button
             className={`nav-item ${activeTab === "calendar" ? "active" : ""}`}
-            onClick={() => setActiveTab("calendar")}
+            onClick={() => handleTabSelect("calendar")}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -63,7 +97,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
 
           <button
             className={`nav-item ${activeTab === "patients" ? "active" : ""}`}
-            onClick={() => setActiveTab("patients")}
+            onClick={() => handleTabSelect("patients")}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -76,7 +110,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
 
           <button
             className={`nav-item ${activeTab === "admin-rooms" ? "active" : ""}`}
-            onClick={() => setActiveTab("admin-rooms")}
+            onClick={() => handleTabSelect("admin-rooms")}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="3"></circle>
@@ -88,7 +122,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
           {role === "admin" && (
             <button
               className={`nav-item ${activeTab === "user-management" ? "active" : ""}`}
-              onClick={() => setActiveTab("user-management")}
+              onClick={() => handleTabSelect("user-management")}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -103,14 +137,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
       </div>
 
       <div className="sidebar-footer">
-        <button className="btn-primary" style={{ width: "100%", justifyContent: "center", marginBottom: "8px" }} onClick={onOpenAdmission}>
+        <button className="btn-primary" style={{ width: "100%", justifyContent: "center", marginBottom: "8px" }} onClick={handleAdmitClick}>
           <span>+ Admit Patient</span>
         </button>
 
         <button
           className="btn-outline"
           style={{ width: "100%", justifyContent: "center", borderColor: "rgba(16, 185, 129, 0.4)", color: "#10b981" }}
-          onClick={() => setActiveTab("admin-rooms")}
+          onClick={() => handleTabSelect("admin-rooms")}
         >
           <span>+ Add / Manage Rooms</span>
         </button>
@@ -134,5 +168,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
         </button>
       </div>
     </aside>
+    </>
   );
 };

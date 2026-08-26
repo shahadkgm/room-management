@@ -24,6 +24,7 @@ const MainAppContent: React.FC = () => {
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [isAdmissionOpen, setIsAdmissionOpen] = useState(false);
   const [admissionPreselectedRoom, setAdmissionPreselectedRoom] = useState<string | undefined>(undefined);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
@@ -93,11 +94,13 @@ const MainAppContent: React.FC = () => {
 
   return (
     <div className="app-container">
-      {/* Left Sidebar */}
+      {/* Left Sidebar / Mobile Drawer */}
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenAdmission={handleOpenGeneralAdmission}
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
       />
 
       {/* Main Content Area */}
@@ -106,6 +109,7 @@ const MainAppContent: React.FC = () => {
           title={getTabTitle()}
           stats={stats}
           onOpenAdmission={handleOpenGeneralAdmission}
+          onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
         />
 
         <main className="page-content">

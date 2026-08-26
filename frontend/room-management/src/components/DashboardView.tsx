@@ -53,9 +53,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   }, [rooms]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+    <div className="dashboard-view">
       {/* Top Banner Row */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#ffffff", padding: "20px 24px", borderRadius: "16px", border: "1px solid #e2e8f0", boxShadow: "0 2px 10px rgba(0,0,0,0.03)" }}>
+      <div className="dashboard-top-banner">
         <div>
           <h2 style={{ fontSize: "22px", fontWeight: 700, color: "#0f172a", margin: 0 }}>Hospital overview</h2>
           <p style={{ fontSize: "13px", color: "#64748b", margin: "4px 0 0 0" }}>
@@ -73,32 +73,32 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       </div>
 
       {/* KPI Cards Row */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "16px" }}>
-        <div className="stat-card" style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "14px", padding: "18px" }}>
+      <div className="dashboard-kpi-grid">
+        <div className="stat-card">
           <div style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", letterSpacing: "0.05em" }}>TOTAL CAPACITY</div>
           <div style={{ fontSize: "28px", fontWeight: 800, color: "#0f172a", margin: "4px 0" }}>{stats.totalRooms}</div>
           <div style={{ fontSize: "12px", color: "#64748b" }}>Hospital Rooms</div>
         </div>
 
-        <div className="stat-card" style={{ background: "#ffffff", border: "1px solid #a7f3d0", borderRadius: "14px", padding: "18px" }}>
+        <div className="stat-card" style={{ borderColor: "#a7f3d0" }}>
           <div style={{ fontSize: "11px", fontWeight: 700, color: "#059669", letterSpacing: "0.05em" }}>AVAILABLE ROOMS</div>
           <div style={{ fontSize: "28px", fontWeight: 800, color: "#059669", margin: "4px 0" }}>{stats.availableRooms}</div>
           <div style={{ fontSize: "12px", color: "#047857" }}>Ready for admission</div>
         </div>
 
-        <div className="stat-card" style={{ background: "#ffffff", border: "1px solid #bfdbfe", borderRadius: "14px", padding: "18px" }}>
+        <div className="stat-card" style={{ borderColor: "#bfdbfe" }}>
           <div style={{ fontSize: "11px", fontWeight: 700, color: "#2563eb", letterSpacing: "0.05em" }}>OCCUPIED ROOMS</div>
           <div style={{ fontSize: "28px", fontWeight: 800, color: "#2563eb", margin: "4px 0" }}>{stats.occupiedRooms}</div>
           <div style={{ fontSize: "12px", color: "#1d4ed8" }}>In stay</div>
         </div>
 
-        <div className="stat-card" style={{ background: "#ffffff", border: "1px solid #fde68a", borderRadius: "14px", padding: "18px" }}>
+        <div className="stat-card" style={{ borderColor: "#fde68a" }}>
           <div style={{ fontSize: "11px", fontWeight: 700, color: "#d97706", letterSpacing: "0.05em" }}>RESERVED ROOMS</div>
           <div style={{ fontSize: "28px", fontWeight: 800, color: "#d97706", margin: "4px 0" }}>{stats.reservedRooms}</div>
           <div style={{ fontSize: "12px", color: "#b45309" }}>Upcoming bookings</div>
         </div>
 
-        <div className="stat-card" style={{ background: "#ffffff", border: "1px solid #fecaca", borderRadius: "14px", padding: "18px" }}>
+        <div className="stat-card" style={{ borderColor: "#fecaca" }}>
           <div style={{ fontSize: "11px", fontWeight: 700, color: "#dc2626", letterSpacing: "0.05em" }}>MAINTENANCE</div>
           <div style={{ fontSize: "28px", fontWeight: 800, color: "#dc2626", margin: "4px 0" }}>{stats.maintenanceRooms}</div>
           <div style={{ fontSize: "12px", color: "#b91c1c" }}>Out of service</div>
@@ -106,14 +106,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       </div>
 
       {/* Grid Row: Today Activity & Ward Breakdown */}
-      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "20px" }}>
+      <div className="dashboard-main-grid">
         {/* Today Activity Card */}
-        <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "16px", padding: "24px", boxShadow: "0 2px 10px rgba(0,0,0,0.03)" }}>
+        <div className="dashboard-card">
           <h3 style={{ fontSize: "16px", fontWeight: 700, color: "#0f172a", marginBottom: "16px" }}>
             Today · {todayFormatted}
           </h3>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "20px" }}>
+          <div className="dashboard-today-subgrid">
             {/* Admissions Today Box */}
             <div style={{ background: "#ecfdf5", border: "1px solid #a7f3d0", borderRadius: "12px", padding: "16px" }}>
               <div style={{ fontSize: "11px", fontWeight: 700, color: "#065f46", textTransform: "uppercase", letterSpacing: "0.05em" }}>
@@ -162,7 +162,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* Ward Occupancy Progress Chart */}
-        <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "16px", padding: "24px", boxShadow: "0 2px 10px rgba(0,0,0,0.03)" }}>
+        <div className="dashboard-card">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
             <div>
               <h3 style={{ fontSize: "16px", fontWeight: 700, color: "#0f172a", margin: 0 }}>📊 Ward Occupancy Rate</h3>
@@ -198,9 +198,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       </div>
 
       {/* Discharge Alerts & Available Rooms */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+      <div className="dashboard-bottom-grid">
         {/* Discharge Alerts Card */}
-        <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "16px", padding: "24px", boxShadow: "0 2px 10px rgba(0,0,0,0.03)" }}>
+        <div className="dashboard-card">
           <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "15px", fontWeight: 700, color: "#b45309", marginBottom: "16px" }}>
             <span>⚠️</span>
             <span>Discharge alerts</span>
@@ -235,7 +235,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* Rooms Ready for Admission Box */}
-        <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "16px", padding: "24px", boxShadow: "0 2px 10px rgba(0,0,0,0.03)" }}>
+        <div className="dashboard-card">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
             <h3 style={{ fontSize: "16px", fontWeight: 700, color: "#0f172a", margin: 0 }}>Rooms ready for admission</h3>
             <span style={{ fontSize: "13px", color: "#0d9488", fontWeight: 600, cursor: "pointer" }}>Open room board →</span>

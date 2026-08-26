@@ -223,3 +223,31 @@
   color: #94a3b8;
   font-size: 14px;
 }
+
+@media (max-width: 768px) {
+  .calendar-matrix-wrapper {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .calendar-top-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .calendar-top-header h2 {
+    font-size: 18px;
+  }
+
+  .controls-area {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .legend-items {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+

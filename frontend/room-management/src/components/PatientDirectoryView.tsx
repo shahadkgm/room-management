@@ -58,47 +58,49 @@ export const PatientDirectoryView: React.FC<PatientDirectoryViewProps> = ({ onOp
             No patient records found.
           </p>
         ) : (
-          <table className="timeline-table">
-            <thead>
-              <tr>
-                <th>Patient Name</th>
-                <th>Age / Gender</th>
-                <th>Phone</th>
-                <th>Unani Ailment / Diagnosis</th>
-                <th>Assigned Room</th>
-                <th>Address</th>
-              </tr>
-            </thead>
-            <tbody>
-              {patients.map((p) => (
-                <tr key={p.id}>
-                  <td style={{ fontWeight: 700, color: "#0f172a" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <span style={{ background: "#ecfdf5", color: "#059669", padding: "4px 8px", borderRadius: "50%", fontSize: "12px" }}>
-                        👤
-                      </span>
-                      {p.name}
-                    </div>
-                  </td>
-                  <td style={{ color: "#334155" }}>
-                    {p.age} yrs · {p.gender}
-                  </td>
-                  <td style={{ color: "#334155" }}>{p.phone}</td>
-                  <td style={{ color: "#0d9488", fontWeight: 600 }}>{p.ailment}</td>
-                  <td>
-                    {p.currentRoom ? (
-                      <span className="badge badge-occupied">
-                        Room {p.currentRoom.roomNumber} ({p.currentRoom.ward})
-                      </span>
-                    ) : (
-                      <span style={{ color: "#64748b" }}>Discharged</span>
-                    )}
-                  </td>
-                  <td style={{ fontSize: "12px", color: "#475569" }}>{p.address}</td>
+          <div className="table-responsive">
+            <table className="timeline-table">
+              <thead>
+                <tr>
+                  <th>Patient Name</th>
+                  <th>Age / Gender</th>
+                  <th>Phone</th>
+                  <th>Unani Ailment / Diagnosis</th>
+                  <th>Assigned Room</th>
+                  <th>Address</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {patients.map((p) => (
+                  <tr key={p.id}>
+                    <td style={{ fontWeight: 700, color: "#0f172a" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span style={{ background: "#ecfdf5", color: "#059669", padding: "4px 8px", borderRadius: "50%", fontSize: "12px" }}>
+                          👤
+                        </span>
+                        {p.name}
+                      </div>
+                    </td>
+                    <td style={{ color: "#334155" }}>
+                      {p.age} yrs · {p.gender}
+                    </td>
+                    <td style={{ color: "#334155" }}>{p.phone}</td>
+                    <td style={{ color: "#0d9488", fontWeight: 600 }}>{p.ailment}</td>
+                    <td>
+                      {p.currentRoom ? (
+                        <span className="badge badge-occupied">
+                          Room {p.currentRoom.roomNumber} ({p.currentRoom.ward})
+                        </span>
+                      ) : (
+                        <span style={{ color: "#64748b" }}>Discharged</span>
+                      )}
+                    </td>
+                    <td style={{ fontSize: "12px", color: "#475569" }}>{p.address}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
