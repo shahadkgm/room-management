@@ -33,7 +33,7 @@ export function createApp(container: AppContainer): Express {
     optionsSuccessStatus: 200,
   };
   app.use(cors(corsOptions));
-  app.options("*", cors(corsOptions)); // handle preflight for all routes
+  app.options("/.*/", cors(corsOptions)); // handle preflight for all routes
   app.use(express.json());
 
   // Health check endpoint
