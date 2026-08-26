@@ -14,8 +14,8 @@ import { errorHandler } from "./middleware/errorHandler";
 export function createApp(container: AppContainer): Express {
   const app = express();
 
-  // Security headers & rate limiting
-  app.use(helmet());
+  // Security headers (disable crossOriginResourcePolicy so CORS works with Vercel)
+  app.use(helmet({ crossOriginResourcePolicy: false }));
   const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 30, // Limit each IP to 30 login/auth requests per 15 min window
@@ -24,8 +24,16 @@ export function createApp(container: AppContainer): Express {
     legacyHeaders: false,
   });
 
-  // Standard middleware
-  app.use(cors({ origin: "*", methods: ["GET", "POST", "PUT", "PATCH", "DELETE"] }));
+  // CORS — allow all origins (frontend on Vercel, local dev, etc.)
+  const corsOptions = {
+    origin: true, // reflect the request origin (allows all origins)
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: false,
+    optionsSuccessStatus: 200,
+  };
+  app.use(cors(corsOptions));
+  app.options("*", cors(corsOptions)); // handle preflight for all routes
   app.use(express.json());
 
   // Health check endpoint
