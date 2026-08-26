@@ -1,0 +1,225 @@
+.calendar-matrix-wrapper {
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #1e293b;
+  overflow: hidden;
+}
+
+.calendar-top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.calendar-top-header .title-area {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.calendar-top-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.date-range-badge {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.controls-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.calendar-nav-btn,
+.calendar-today-btn {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.calendar-nav-btn:hover,
+.calendar-today-btn:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.calendar-legend-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.legend-items {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #475569;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.available-dot {
+  background-color: #10b981;
+}
+
+.occupied-dot {
+  background-color: #2563eb;
+}
+
+.reserved-dot {
+  background-color: #ea580c;
+}
+
+.maintenance-dot {
+  background-color: #94a3b8;
+}
+
+.legend-description {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.matrix-table-container {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+}
+
+.matrix-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 3px 6px;
+  min-width: 900px;
+}
+
+.matrix-table th {
+  padding: 6px 0;
+  text-align: center;
+  font-weight: 600;
+}
+
+.sticky-col {
+  position: sticky;
+  left: 0;
+  background-color: #ffffff;
+  z-index: 2;
+  min-width: 100px;
+  text-align: left !important;
+  padding-right: 12px !important;
+}
+
+.room-head-col {
+  font-size: 12px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.date-col-head {
+  min-width: 28px;
+}
+
+.date-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.date-day {
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 600;
+  margin-top: 1px;
+}
+
+.room-info-cell {
+  cursor: pointer;
+}
+
+.room-num-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.ward-subtext {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.matrix-cell {
+  padding: 0 !important;
+  height: 38px;
+  min-width: 26px;
+  vertical-align: middle;
+}
+
+.grid-block {
+  width: 100%;
+  height: 36px;
+  border-radius: 6px;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  cursor: pointer;
+}
+
+.grid-block:hover {
+  transform: scaleY(1.08);
+  opacity: 0.9;
+}
+
+.block-available {
+  border: 2px solid #10b981;
+  background-color: rgba(16, 185, 129, 0.04);
+}
+
+.block-occupied {
+  background-color: #2563eb;
+}
+
+.block-reserved {
+  background-color: #ea580c;
+}
+
+.block-maintenance {
+  background-color: #cbd5e1;
+}
+
+.loading-state {
+  padding: 40px 0;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+}

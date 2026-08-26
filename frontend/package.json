@@ -1,0 +1,9 @@
+{
+  "name": "frontend-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix room-management run dev",
+    "build": "npm --prefix room-management run build"
+  }
+}
