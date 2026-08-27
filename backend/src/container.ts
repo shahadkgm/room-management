@@ -107,9 +107,9 @@ export async function createContainer(): Promise<AppContainer> {
   const conflictChecker: IBookingConflictChecker = new DateRangeConflictChecker();
   const statusCalculator: IRoomStatusCalculator = new DynamicRoomStatusCalculator();
 
-  // Seed default users, rooms, and bookings if missing
+  // Seed default users (Admin & Receptionist) if missing
   try {
-    await seedInitialData(userRepository, roomRepository, patientRepository, bookingRepository, passwordHasher);
+    await seedInitialData(userRepository, passwordHasher);
   } catch (err) {
     console.warn("Seeding failed or already complete:", err);
   }

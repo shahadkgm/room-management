@@ -28,16 +28,6 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-  const fillSeedAccount = (type: "admin" | "staff") => {
-    setErrorMsg(null);
-    if (type === "admin") {
-      setUsernameOrEmail("admin");
-      setPassword("admin");
-    } else {
-      setUsernameOrEmail("receptionist");
-      setPassword("receptionist");
-    }
-  };
 
   return (
     <div className="login-wrapper">
@@ -127,37 +117,6 @@ export const LoginPage: React.FC = () => {
               {submitting ? "Signing in..." : "Sign In"}
             </button>
           </form>
-
-          {/* Seed Accounts Box */}
-          {/* <div className="seed-accounts-box">
-            <div className="seed-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shield-icon">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-              </svg>
-              <span>Seed Accounts:</span>
-            </div>
-            <div className="seed-details">
-              <div className="seed-row" onClick={() => fillSeedAccount("admin")}>
-                <span>Admin:</span> <strong className="green-text">admin / admin</strong>
-              </div>
-              <div className="seed-row" onClick={() => fillSeedAccount("staff")}>
-                <span>Staff:</span> <strong className="green-text">receptionist / receptionist</strong>
-              </div>
-            </div>
-          </div> */}
-
-          <div className="login-footer-link">
-            {/* <span>Don't have an account? </span> */}
-            {/* <a
-              href="#register"
-              onClick={(e) => {
-                e.preventDefault();
-                alert("Please contact hospital administrator to register a new account.");
-              }}
-            >
-              Register here
-            </a> */}
-          </div>
         </div>
       </div>
     </div>
