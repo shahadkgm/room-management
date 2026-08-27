@@ -37,11 +37,11 @@ export class RoomController {
 
   create = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { roomNumber, ward, floor, bedCount, dailyRate, amenities, isUnderMaintenance } = req.body;
-      if (!roomNumber || !ward || floor === undefined || bedCount === undefined || dailyRate === undefined) {
+      const { roomNumber, ward, floor, bedCount, amenities, isUnderMaintenance } = req.body;
+      if (!roomNumber || !ward || floor === undefined || bedCount === undefined) {
         res.status(400).json({
           success: false,
-          message: "roomNumber, ward, floor, bedCount, and dailyRate are required.",
+          message: "roomNumber, ward, floor, and bedCount are required.",
         });
         return;
       }
@@ -51,7 +51,6 @@ export class RoomController {
         ward,
         floor: Number(floor),
         bedCount: Number(bedCount),
-        dailyRate: Number(dailyRate),
         amenities,
         isUnderMaintenance,
       });

@@ -45,7 +45,6 @@ export class InMemoryRoomRepository implements IRoomRepository {
       ward: room.ward,
       floor: room.floor,
       bedCount: room.bedCount,
-      dailyRate: room.dailyRate,
       amenities: room.amenities || [],
       isUnderMaintenance: room.isUnderMaintenance || false,
       createdAt: now,

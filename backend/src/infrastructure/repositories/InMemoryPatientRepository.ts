@@ -36,7 +36,6 @@ export class InMemoryPatientRepository implements IPatientRepository {
       phone: patient.phone,
       address: patient.address,
       ailment: patient.ailment,
-      notes: patient.notes || "",
       createdAt: now,
       updatedAt: now,
     };

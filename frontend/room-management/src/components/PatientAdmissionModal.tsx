@@ -25,7 +25,6 @@ export const PatientAdmissionModal: React.FC<PatientAdmissionModalProps> = ({
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [ailment, setAilment] = useState("");
-  const [notes, setNotes] = useState("");
   const [admissionDate, setAdmissionDate] = useState(todayStr);
   const [expectedDischargeDate, setExpectedDischargeDate] = useState(inThreeDays);
 
@@ -62,7 +61,6 @@ export const PatientAdmissionModal: React.FC<PatientAdmissionModalProps> = ({
           phone,
           address,
           ailment,
-          notes,
         },
       });
 
@@ -211,16 +209,6 @@ export const PatientAdmissionModal: React.FC<PatientAdmissionModalProps> = ({
                 onChange={(e) => setAddress(e.target.value)}
                 required
               />
-            </div>
-
-            <div className="form-field">
-              <label>Therapy Regimen / Admission Notes</label>
-              <textarea
-                rows={2}
-                placeholder="Prescribed Unani therapies (Hijama, Hammam, Dalk) or dietary instructions"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              ></textarea>
             </div>
           </div>
 

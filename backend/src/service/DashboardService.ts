@@ -28,7 +28,6 @@ export class DashboardService implements IDashboardService {
             phone: patient.phone,
             address: patient.address,
             ailment: patient.ailment,
-            notes: patient.notes,
           }
         : undefined,
       room: room

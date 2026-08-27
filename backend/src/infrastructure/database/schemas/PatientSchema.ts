@@ -9,7 +9,6 @@ const patientMongooseSchema = new Schema<IPatient>(
     phone: { type: String, required: true },
     address: { type: String, required: true },
     ailment: { type: String, default: "" },
-    notes: { type: String, default: "" },
   },
   {
     timestamps: true,

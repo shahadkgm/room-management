@@ -37,7 +37,6 @@ export const AdminRoomManagerModal: React.FC<AdminRoomManagerModalProps> = ({ ro
         ward,
         floor: Number(floor),
         bedCount: Number(bedCount),
-        dailyRate: 0,
         amenities: amenities.split(",").map((s) => s.trim()).filter(Boolean),
       });
       setSuccessMsg(`Room ${roomNumber} created successfully!`);

@@ -30,7 +30,6 @@ export class BookingService implements IBookingService {
             phone: patient.phone,
             address: patient.address,
             ailment: patient.ailment,
-            notes: patient.notes,
           }
         : undefined,
       room: room

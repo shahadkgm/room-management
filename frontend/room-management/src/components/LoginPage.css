@@ -72,21 +72,31 @@
 }
 
 .login-error-alert {
-  background-color: rgba(239, 68, 68, 0.12);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background-color: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
   color: #fca5a5;
-  padding: 10px 14px;
+  padding: 12px 14px;
   border-radius: 8px;
   font-size: 13px;
   margin-bottom: 18px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   line-height: 1.4;
+  animation: loginErrorShake 0.4s ease-in-out;
+}
+
+@keyframes loginErrorShake {
+  0% { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  30% { transform: translateY(0) translateX(-4px); }
+  60% { transform: translateX(4px); }
+  80% { transform: translateX(-2px); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
 }
 
 .error-icon {
-  font-size: 14px;
+  font-size: 16px;
+  flex-shrink: 0;
 }
 
 .login-form {

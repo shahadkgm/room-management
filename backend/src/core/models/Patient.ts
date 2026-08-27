@@ -8,7 +8,6 @@ export interface IPatient {
   phone: string;
   address: string;
   ailment?: string;
-  notes?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,7 +19,6 @@ export interface CreatePatientDTO {
   phone: string;
   address: string;
   ailment?: string;
-  notes?: string;
 }
 
 export interface UpdatePatientDTO {
@@ -30,5 +28,4 @@ export interface UpdatePatientDTO {
   phone?: string;
   address?: string;
   ailment?: string;
-  notes?: string;
 }

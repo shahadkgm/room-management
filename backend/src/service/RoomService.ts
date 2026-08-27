@@ -65,7 +65,6 @@ export class RoomService implements IRoomService {
                 phone: patient.phone,
                 address: patient.address,
                 ailment: patient.ailment,
-                notes: patient.notes,
               }
             : undefined,
           room: {
@@ -74,7 +73,6 @@ export class RoomService implements IRoomService {
             ward: room.ward,
             floor: room.floor,
             bedCount: room.bedCount,
-            dailyRate: room.dailyRate,
           },
         };
       })

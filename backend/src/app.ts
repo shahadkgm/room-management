@@ -36,7 +36,7 @@ export function createApp(container: AppContainer): Express {
     optionsSuccessStatus: 200,
   };
   app.use(cors(corsOptions));
-  app.options("*", cors(corsOptions));
+app.options("/*splat", cors());
   app.use(express.json());
 
   // Health check endpoint

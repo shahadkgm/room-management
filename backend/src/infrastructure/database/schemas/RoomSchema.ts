@@ -7,7 +7,6 @@ const roomMongooseSchema = new Schema<IRoom>(
     ward: { type: String, required: true },
     floor: { type: Number, required: true, default: 1 },
     bedCount: { type: Number, required: true, default: 1 },
-    dailyRate: { type: Number, required: true, default: 1000 },
     amenities: { type: [String], default: [] },
     isUnderMaintenance: { type: Boolean, default: false },
   },

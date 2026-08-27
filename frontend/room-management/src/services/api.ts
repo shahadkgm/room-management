@@ -84,7 +84,6 @@ class ApiService {
     ward: string;
     floor: number;
     bedCount: number;
-    dailyRate: number;
     amenities?: string[];
   }): Promise<Room> {
     return this.request<Room>("/rooms", {
@@ -148,7 +147,6 @@ class ApiService {
       phone: string;
       address: string;
       ailment?: string;
-      notes?: string;
     };
     roomId: string;
     admissionDate: string;

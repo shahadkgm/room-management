@@ -6,7 +6,6 @@ export interface IRoom {
   ward: string;
   floor: number;
   bedCount: number;
-  dailyRate: number;
   amenities: string[];
   isUnderMaintenance: boolean;
   status?: RoomStatus;
@@ -19,7 +18,6 @@ export interface CreateRoomDTO {
   ward: string;
   floor: number;
   bedCount: number;
-  dailyRate: number;
   amenities?: string[];
   isUnderMaintenance?: boolean;
 }
@@ -29,7 +27,6 @@ export interface UpdateRoomDTO {
   ward?: string;
   floor?: number;
   bedCount?: number;
-  dailyRate?: number;
   amenities?: string[];
   isUnderMaintenance?: boolean;
 }

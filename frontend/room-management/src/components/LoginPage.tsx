@@ -129,7 +129,7 @@ export const LoginPage: React.FC = () => {
           </form>
 
           {/* Seed Accounts Box */}
-          <div className="seed-accounts-box">
+          {/* <div className="seed-accounts-box">
             <div className="seed-header">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shield-icon">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
@@ -144,11 +144,11 @@ export const LoginPage: React.FC = () => {
                 <span>Staff:</span> <strong className="green-text">receptionist / receptionist</strong>
               </div>
             </div>
-          </div>
+          </div> */}
 
           <div className="login-footer-link">
-            <span>Don't have an account? </span>
-            <a
+            {/* <span>Don't have an account? </span> */}
+            {/* <a
               href="#register"
               onClick={(e) => {
                 e.preventDefault();
@@ -156,7 +156,7 @@ export const LoginPage: React.FC = () => {
               }}
             >
               Register here
-            </a>
+            </a> */}
           </div>
         </div>
       </div>

@@ -27,7 +27,6 @@ export interface DirectAdmissionDTO {
     phone: string;
     address: string;
     ailment?: string;
-    notes?: string;
   };
   roomId: string;
   admissionDate: string;
@@ -47,7 +46,6 @@ export interface PopulatedBooking extends IBooking {
     phone: string;
     address: string;
     ailment?: string;
-    notes?: string;
   };
   room?: {
     id: string;

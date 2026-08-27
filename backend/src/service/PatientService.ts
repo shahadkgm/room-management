@@ -28,7 +28,6 @@ export class PatientService implements IPatientService {
             phone: patient.phone,
             address: patient.address,
             ailment: patient.ailment,
-            notes: patient.notes,
           },
           room: room
             ? {
@@ -37,7 +36,6 @@ export class PatientService implements IPatientService {
                 ward: room.ward,
                 floor: room.floor,
                 bedCount: room.bedCount,
-                dailyRate: room.dailyRate,
               }
             : undefined,
         };

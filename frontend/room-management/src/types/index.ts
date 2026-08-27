@@ -16,7 +16,6 @@ export interface Room {
   ward: string;
   floor: number;
   bedCount: number;
-  dailyRate: number;
   amenities: string[];
   isUnderMaintenance: boolean;
   status: RoomStatus;
@@ -34,7 +33,6 @@ export interface Patient {
   phone: string;
   address: string;
   ailment: string;
-  notes?: string;
   createdAt: string;
   updatedAt: string;
   bookings?: Booking[];
@@ -55,9 +53,6 @@ export interface Booking {
   expectedDischargeDate: string;
   actualDischargeDate?: string;
   status: BookingStatus;
-  notes?: string;
-  dailyRate: number;
-  totalAmount?: number;
   patient?: {
     id: string;
     name: string;
@@ -66,7 +61,6 @@ export interface Booking {
     phone: string;
     address: string;
     ailment: string;
-    notes?: string;
   };
   room?: {
     id: string;
@@ -74,7 +68,6 @@ export interface Booking {
     ward: string;
     floor: number;
     bedCount: number;
-    dailyRate: number;
   };
 }
 

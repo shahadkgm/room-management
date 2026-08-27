@@ -19,10 +19,7 @@ export class MongoPatientRepository implements IPatientRepository {
   }
 
   async create(patient: CreatePatientDTO): Promise<IPatient> {
-    const doc = await PatientModel.create({
-      ...patient,
-      notes: patient.notes || "",
-    });
+    const doc = await PatientModel.create(patient);
     return doc.toJSON() as IPatient;
   }
 

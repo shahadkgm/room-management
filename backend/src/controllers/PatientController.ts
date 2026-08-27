@@ -36,7 +36,7 @@ export class PatientController {
 
   create = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { name, age, gender, phone, address, ailment, notes } = req.body;
+      const { name, age, gender, phone, address, ailment } = req.body;
       if (!name || age === undefined || !gender || !phone || !address || !ailment) {
         res.status(400).json({
           success: false,
@@ -52,7 +52,6 @@ export class PatientController {
         phone,
         address,
         ailment,
-        notes,
       });
       res.status(201).json({ success: true, data: patient });
     } catch (error: any) {
