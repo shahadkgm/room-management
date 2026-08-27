@@ -10,15 +10,18 @@ export class PatientController {
 
   getAll = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { search } = req.query;
-      const patients = await this.patientService.getAllPatients({
+      const { search, page, limit } = req.query;
+      const result = await this.patientService.getAllPatients({
         search: search ? String(search) : undefined,
+        page: page ? parseInt(String(page), 5) : 1,
+        limit: limit ? parseInt(String(limit), 5) : 5,
       });
-      res.status(200).json({ success: true, data: patients });
+      res.status(200).json({ success: true, data: result.patients, total: result.total, page: result.page, totalPages: result.totalPages });
     } catch (error: any) {
       res.status(500).json({ success: false, message: error.message });
     }
   };
+
 
   getById = async (req: Request, res: Response): Promise<void> => {
     try {

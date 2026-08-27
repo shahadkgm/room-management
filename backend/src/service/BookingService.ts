@@ -136,6 +136,34 @@ export class BookingService implements IBookingService {
     return cancelled;
   }
 
+  async updateBooking(bookingId: string, dto: { admissionDate: string; expectedDischargeDate: string }): Promise<IBooking> {
+    const booking = await this.bookingRepository.findById(bookingId);
+    if (!booking) throw new Error("Booking not found.");
+    if (booking.status !== "reserved") {
+      throw new Error("Only reserved bookings can be edited. Active bookings cannot be modified.");
+    }
+
+    // Re-check conflict excluding the current booking
+    const existingBookings = await this.bookingRepository.findByRoomId(booking.roomId);
+    const others = existingBookings.filter((b) => b.id !== bookingId && b.status !== "cancelled");
+    const hasConflict = this.conflictChecker.hasConflict(dto.admissionDate, dto.expectedDischargeDate, others);
+    if (hasConflict) {
+      throw new Error("Schedule conflict: The room is already booked during the new date window.");
+    }
+
+    const todayStr = new Date().toISOString().split("T")[0];
+    const isFuture = dto.admissionDate > todayStr;
+    const newStatus = isFuture ? "reserved" : "active";
+
+    const updated = await this.bookingRepository.update(bookingId, {
+      admissionDate: dto.admissionDate,
+      expectedDischargeDate: dto.expectedDischargeDate,
+      status: newStatus,
+    });
+    if (!updated) throw new Error("Failed to update booking.");
+    return updated;
+  }
+
   async getTimeline(startDate: string, endDate: string): Promise<PopulatedBooking[]> {
     const allBookings = await this.bookingRepository.list();
     const rangeStart = new Date(startDate).getTime();

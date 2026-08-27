@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import type { Patient } from "../types";
 import { api } from "../services/api";
 
@@ -6,26 +6,47 @@ interface PatientDirectoryViewProps {
   onOpenAdmission: () => void;
 }
 
+const PAGE_SIZE = 10;
+
 export const PatientDirectoryView: React.FC<PatientDirectoryViewProps> = ({ onOpenAdmission }) => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const fetchPatients = async () => {
+  const fetchPatients = useCallback(async (page: number, searchTerm: string) => {
     try {
       setLoading(true);
-      const data = await api.getPatients(search);
-      setPatients(data);
+      const result = await api.getPatients(searchTerm || undefined, page, PAGE_SIZE);
+      setPatients(result.patients);
+      setTotal(result.total);
+      setTotalPages(result.totalPages);
     } catch (e) {
       console.error("Error fetching patients:", e);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // Reset page to 1 on search change, then fetch
+  useEffect(() => {
+    setCurrentPage(1);
+    fetchPatients(1, search);
+  }, [search]);
 
   useEffect(() => {
-    fetchPatients();
-  }, [search]);
+    fetchPatients(currentPage, search);
+  }, [currentPage]);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setCurrentPage(newPage);
+  };
+
+  const start = total === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1;
+  const end = Math.min(currentPage * PAGE_SIZE, total);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -46,11 +67,20 @@ export const PatientDirectoryView: React.FC<PatientDirectoryViewProps> = ({ onOp
         </div>
 
         <button className="btn-primary" onClick={onOpenAdmission}>
-          + Register & Admit Patient
+          + Register &amp; Admit Patient
         </button>
       </div>
 
       <div className="timeline-card">
+        {/* Table header count */}
+        {!loading && total > 0 && (
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
+            <span style={{ fontSize: "13px", color: "var(--text-muted)", fontWeight: 500 }}>
+              Showing <strong style={{ color: "#0f172a" }}>{start}–{end}</strong> of <strong style={{ color: "#0f172a" }}>{total}</strong> patients
+            </span>
+          </div>
+        )}
+
         {loading ? (
           <p style={{ color: "var(--text-muted)", padding: "20px 0" }}>Loading patients...</p>
         ) : patients.length === 0 ? (
@@ -100,6 +130,80 @@ export const PatientDirectoryView: React.FC<PatientDirectoryViewProps> = ({ onOp
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {/* Pagination controls */}
+        {!loading && totalPages > 1 && (
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "10px",
+            marginTop: "20px",
+            paddingTop: "16px",
+            borderTop: "1px solid #e2e8f0",
+          }}>
+            <button
+              id="patient-page-prev"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              style={{
+                padding: "6px 14px",
+                borderRadius: "8px",
+                border: "1.5px solid #e2e8f0",
+                background: currentPage === 1 ? "#f1f5f9" : "#fff",
+                color: currentPage === 1 ? "#94a3b8" : "#0f172a",
+                fontWeight: 600,
+                cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                fontSize: "13px",
+                transition: "all 0.18s",
+              }}
+            >
+              ← Previous
+            </button>
+
+            {/* Page number pills */}
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <button
+                key={p}
+                id={`patient-page-${p}`}
+                onClick={() => handlePageChange(p)}
+                style={{
+                  width: "34px",
+                  height: "34px",
+                  borderRadius: "8px",
+                  border: p === currentPage ? "none" : "1.5px solid #e2e8f0",
+                  background: p === currentPage ? "linear-gradient(135deg, #0d9488, #0f766e)" : "#fff",
+                  color: p === currentPage ? "#fff" : "#334155",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontSize: "13px",
+                  transition: "all 0.18s",
+                }}
+              >
+                {p}
+              </button>
+            ))}
+
+            <button
+              id="patient-page-next"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              style={{
+                padding: "6px 14px",
+                borderRadius: "8px",
+                border: "1.5px solid #e2e8f0",
+                background: currentPage === totalPages ? "#f1f5f9" : "#fff",
+                color: currentPage === totalPages ? "#94a3b8" : "#0f172a",
+                fontWeight: 600,
+                cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                fontSize: "13px",
+                transition: "all 0.18s",
+              }}
+            >
+              Next →
+            </button>
           </div>
         )}
       </div>

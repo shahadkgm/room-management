@@ -23,12 +23,21 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
+  // Edit-reservation state
+  const [editingBookingId, setEditingBookingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<{ admissionDate: string; expectedDischargeDate: string }>({
+    admissionDate: "",
+    expectedDischargeDate: "",
+  });
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+
   // Custom confirm state
   const [confirmState, setConfirmState] = useState<{
     open: boolean;
     bookingId: string;
     patientName: string;
-  }>({ open: false, bookingId: "", patientName: "" });
+    action: "discharge" | "cancel";
+  }>({ open: false, bookingId: "", patientName: "", action: "discharge" });
 
   const fetchDetails = async () => {
     try {
@@ -56,24 +65,63 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
   }, [roomId]);
 
   const handleDischargeClick = (bookingId: string, patientName?: string) => {
-    setConfirmState({ open: true, bookingId, patientName: patientName || "this patient" });
+    setConfirmState({ open: true, bookingId, patientName: patientName || "this patient", action: "discharge" });
   };
 
-  const handleDischargeConfirmed = async () => {
-    const { bookingId } = confirmState;
-    setConfirmState({ open: false, bookingId: "", patientName: "" });
+  const handleConfirmAction = async () => {
+    const { bookingId, action } = confirmState;
+    setConfirmState({ open: false, bookingId: "", patientName: "", action: "discharge" });
+
+    if (action === "discharge") {
+      try {
+        setIsDischarging(bookingId);
+        setErrorMsg(null);
+        const date = dischargeDates[bookingId] || new Date().toISOString().split("T")[0];
+        await api.dischargePatient(bookingId, date);
+        setSuccessMsg("Patient discharged successfully. Room freed!");
+        onRefresh();
+        await fetchDetails();
+      } catch (err: any) {
+        setErrorMsg(err.message || "Failed to discharge patient.");
+      } finally {
+        setIsDischarging(null);
+      }
+    } else if (action === "cancel") {
+      try {
+        setErrorMsg(null);
+        await api.cancelBooking(bookingId);
+        setSuccessMsg("Reservation cancelled successfully.");
+        onRefresh();
+        await fetchDetails();
+      } catch (err: any) {
+        setErrorMsg(err.message || "Failed to cancel reservation.");
+      }
+    }
+  };
+
+  const handleEditClick = (booking: Booking) => {
+    setEditingBookingId(booking.id);
+    setEditForm({
+      admissionDate: booking.admissionDate.split("T")[0],
+      expectedDischargeDate: booking.expectedDischargeDate.split("T")[0],
+    });
+    setErrorMsg(null);
+  };
+
+  const handleEditSave = async () => {
+    if (!editingBookingId) return;
     try {
-      setIsDischarging(bookingId);
+      setIsSavingEdit(true);
       setErrorMsg(null);
-      const date = dischargeDates[bookingId] || new Date().toISOString().split("T")[0];
-      await api.dischargePatient(bookingId, date);
-      setSuccessMsg("Patient discharged successfully. Room freed!");
+      await api.updateBooking(editingBookingId, editForm);
+      setSuccessMsg("Reservation dates updated successfully.");
+      setEditingBookingId(null);
       onRefresh();
       await fetchDetails();
     } catch (err: any) {
-      setErrorMsg(err.message || "Failed to discharge patient.");
+      setErrorMsg(err.message || "Failed to update reservation.");
     } finally {
-      setIsDischarging(null);
+      setIsSavingEdit(false);
     }
   };
 
@@ -97,7 +145,7 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
   if (loading || !roomData) {
     return (
       <div className="modal-overlay" onClick={onClose}>
-        <div className="modal-dialog" onClick={(e) => e.stopPropagation()} style={{ padding: "40px", textAlign: "center" }}>
+        <div className="modal-dialog" onClick={(e) => e.stopPropagation()} style={{ padding: "40px", textAlign: "center", width: "90%", maxWidth: "540px" }}>
           <p style={{ color: "#64748b" }}>Loading room details...</p>
         </div>
       </div>
@@ -106,25 +154,72 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
 
   const allActiveUpcoming = [...(roomData.activeBookings || []), ...(roomData.upcomingBookings || [])];
 
+  const confirmTitle = confirmState.action === "discharge" ? "Discharge Patient" : "Cancel Reservation";
+  const confirmMessage =
+    confirmState.action === "discharge"
+      ? `Are you sure you want to discharge ${confirmState.patientName} from Room ${roomData.roomNumber}? This action cannot be undone.`
+      : `Are you sure you want to cancel the reservation for ${confirmState.patientName}? The booking will be removed.`;
+  const confirmLabel = confirmState.action === "discharge" ? "Yes, Discharge" : "Yes, Cancel";
+  const keepLabel = confirmState.action === "discharge" ? "Keep Admitted" : "Keep Reservation";
+
   return (
     <>
       <ConfirmModal
         isOpen={confirmState.open}
-        title="Discharge Patient"
-        message={`Are you sure you want to discharge ${confirmState.patientName} from Room ${roomData.roomNumber}? This action cannot be undone.`}
-        confirmLabel="Yes, Discharge"
-        cancelLabel="Keep Admitted"
+        title={confirmTitle}
+        message={confirmMessage}
+        confirmLabel={confirmLabel}
+        cancelLabel={keepLabel}
         variant="danger"
-        onConfirm={handleDischargeConfirmed}
-        onCancel={() => setConfirmState({ open: false, bookingId: "", patientName: "" })}
+        onConfirm={handleConfirmAction}
+        onCancel={() => setConfirmState({ open: false, bookingId: "", patientName: "", action: "discharge" })}
       />
 
       <div className="modal-overlay" onClick={onClose}>
-        <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
+        {/* Scoped Responsive CSS */}
+        <style>{`
+          .responsive-modal-dialog {
+            width: 92% !important;
+            max-width: 540px !important;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 16px;
+            box-sizing: border-box;
+          }
+          .responsive-booking-header {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 12px;
+          }
+          .responsive-action-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+          }
+          .responsive-form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+          }
+          @media (min-width: 500px) {
+            .responsive-booking-header {
+              flex-direction: row;
+              justify-content: space-between;
+              align-items: flex-start;
+            }
+            .responsive-form-grid {
+              grid-template-columns: 1fr 1fr;
+            }
+          }
+        `}</style>
+
+        <div className="modal-dialog responsive-modal-dialog" onClick={(e) => e.stopPropagation()}>
           {/* Header */}
           <div className="modal-header">
             <div>
-              <div className="modal-title-wrap">
+              <div className="modal-title-wrap" style={{ flexWrap: "wrap", gap: "8px" }}>
                 <h2>Room {roomData.roomNumber}</h2>
                 <span className={`badge badge-${roomData.status}`}>
                   • {roomData.status.charAt(0).toUpperCase() + roomData.status.slice(1)}
@@ -138,13 +233,13 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
           </div>
 
           {/* Body */}
-          <div className="modal-body">
+          <div className="modal-body" style={{ padding: "16px" }}>
             {errorMsg && <div className="alert-error">{errorMsg}</div>}
             {successMsg && <div className="alert-success">{successMsg}</div>}
 
-            <div className="modal-section-title">
-              <h4 style={{ fontSize: "14px", fontWeight: 700, color: "#0f172a" }}>
-                Active & Upcoming ({allActiveUpcoming.length})
+            <div className="modal-section-title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px", marginBottom: "16px" }}>
+              <h4 style={{ fontSize: "14px", fontWeight: 700, color: "#0f172a", margin: 0 }}>
+                Active &amp; Upcoming ({allActiveUpcoming.length})
               </h4>
               <button
                 style={{
@@ -176,12 +271,14 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
             ) : (
               allActiveUpcoming.map((booking: Booking) => {
                 const isActive = booking.status === "active";
+                const isReserved = booking.status === "reserved";
                 const daysLeft = calculateDaysRemaining(booking.expectedDischargeDate);
+                const isEditing = editingBookingId === booking.id;
 
                 return (
-                  <div key={booking.id} className="booking-card-white">
+                  <div key={booking.id} className="booking-card-white" style={{ overflow: "hidden" }}>
                     {/* Patient Line */}
-                    <div className="booking-header">
+                    <div className="responsive-booking-header">
                       <div className="patient-identity">
                         <div className="patient-identity-icon">👤</div>
                         <div>
@@ -193,42 +290,170 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
                           </div>
                         </div>
                       </div>
-                      <span
+                      <div className="responsive-action-group">
+                        <span
+                          style={{
+                            fontSize: "11px",
+                            fontWeight: 700,
+                            padding: "3px 10px",
+                            borderRadius: "20px",
+                            background: isActive ? "#ecfdf5" : "#fffbeb",
+                            color: isActive ? "#059669" : "#d97706",
+                            border: `1px solid ${isActive ? "#a7f3d0" : "#fde68a"}`,
+                          }}
+                        >
+                          {isActive ? "Active" : "Reserved"}
+                        </span>
+
+                        {/* Edit & Cancel buttons for RESERVED bookings */}
+                        {isReserved && !isEditing && (
+                          <>
+                            <button
+                              id={`edit-reservation-${booking.id}`}
+                              title="Edit reservation dates"
+                              onClick={() => handleEditClick(booking)}
+                              style={{
+                                background: "linear-gradient(135deg, #3b82f6, #2563eb)",
+                                color: "#fff",
+                                border: "none",
+                                borderRadius: "7px",
+                                padding: "4px 10px",
+                                fontSize: "11.5px",
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "4px",
+                              }}
+                            >
+                              ✏️ Edit
+                            </button>
+                            <button
+                              id={`cancel-reservation-${booking.id}`}
+                              title="Cancel reservation"
+                              onClick={() =>
+                                setConfirmState({
+                                  open: true,
+                                  bookingId: booking.id,
+                                  patientName: booking.patient?.name || "this patient",
+                                  action: "cancel",
+                                })
+                              }
+                              style={{
+                                background: "linear-gradient(135deg, #ef4444, #dc2626)",
+                                color: "#fff",
+                                border: "none",
+                                borderRadius: "7px",
+                                padding: "4px 10px",
+                                fontSize: "11.5px",
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "4px",
+                              }}
+                            >
+                              🗑️ Cancel
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Inline Edit Form for Reserved Booking */}
+                    {isReserved && isEditing && (
+                      <div
                         style={{
-                          fontSize: "11px",
-                          fontWeight: 700,
-                          padding: "3px 10px",
-                          borderRadius: "20px",
-                          background: isActive ? "#ecfdf5" : "#fffbeb",
-                          color: isActive ? "#059669" : "#d97706",
-                          border: `1px solid ${isActive ? "#a7f3d0" : "#fde68a"}`,
+                          background: "#f0fdf4",
+                          border: "1.5px solid #86efac",
+                          borderRadius: "10px",
+                          padding: "14px",
+                          marginTop: "10px",
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "10px",
                         }}
                       >
-                        {isActive ? "Active" : "Reserved"}
-                      </span>
-                    </div>
+                        <div style={{ fontWeight: 700, fontSize: "13px", color: "#065f46" }}>✏️ Edit Reservation Dates</div>
+                        <div className="responsive-form-grid">
+                          <div className="form-field">
+                            <label style={{ fontSize: "12px" }}>Admission Date</label>
+                            <input
+                              type="date"
+                              style={{ width: "100%", boxSizing: "border-box" }}
+                              value={editForm.admissionDate}
+                              onChange={(e) => setEditForm({ ...editForm, admissionDate: e.target.value })}
+                            />
+                          </div>
+                          <div className="form-field">
+                            <label style={{ fontSize: "12px" }}>Expected Discharge</label>
+                            <input
+                              type="date"
+                              style={{ width: "100%", boxSizing: "border-box" }}
+                              value={editForm.expectedDischargeDate}
+                              onChange={(e) => setEditForm({ ...editForm, expectedDischargeDate: e.target.value })}
+                            />
+                          </div>
+                        </div>
+                        <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+                          <button
+                            onClick={() => setEditingBookingId(null)}
+                            style={{
+                              padding: "6px 14px",
+                              borderRadius: "7px",
+                              border: "1.5px solid #cbd5e1",
+                              background: "#fff",
+                              color: "#475569",
+                              fontWeight: 600,
+                              cursor: "pointer",
+                              fontSize: "12.5px",
+                            }}
+                          >
+                            Discard
+                          </button>
+                          <button
+                            onClick={handleEditSave}
+                            disabled={isSavingEdit}
+                            style={{
+                              padding: "6px 14px",
+                              borderRadius: "7px",
+                              border: "none",
+                              background: "linear-gradient(135deg, #0d9488, #0f766e)",
+                              color: "#fff",
+                              fontWeight: 600,
+                              cursor: isSavingEdit ? "not-allowed" : "pointer",
+                              fontSize: "12.5px",
+                            }}
+                          >
+                            {isSavingEdit ? "Saving..." : "Save Changes"}
+                          </button>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Dates Grid */}
-                    <div className="dates-grid">
-                      <div className="date-block">
-                        <div className="label">Admission</div>
-                        <div className="val">{formatDateDisplay(booking.admissionDate)}</div>
+                    {!isEditing && (
+                      <div className="dates-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "8px" }}>
+                        <div className="date-block">
+                          <div className="label">Admission</div>
+                          <div className="val">{formatDateDisplay(booking.admissionDate)}</div>
+                        </div>
+                        <div className="date-block">
+                          <div className="label">Expected Discharge</div>
+                          <div className="val">{formatDateDisplay(booking.expectedDischargeDate)}</div>
+                        </div>
                       </div>
-                      <div className="date-block">
-                        <div className="label">Expected Discharge</div>
-                        <div className="val">{formatDateDisplay(booking.expectedDischargeDate)}</div>
-                      </div>
-                    </div>
+                    )}
 
-                    {booking.patient?.address && (
-                      <div style={{ display: "flex", gap: "8px", fontSize: "12.5px" }}>
+                    {booking.patient?.address && !isEditing && (
+                      <div style={{ display: "flex", gap: "8px", fontSize: "12.5px", flexWrap: "wrap", marginTop: "8px" }}>
                         <span style={{ color: "#94a3b8", fontWeight: 600 }}>Address:</span>
                         <span style={{ color: "#475569" }}>{booking.patient.address}</span>
                       </div>
                     )}
 
                     {isActive && (
-                      <div className="discharge-countdown-alert">
+                      <div className="discharge-countdown-alert" style={{ marginTop: "10px" }}>
                         <span>⏰</span>
                         <span>
                           {daysLeft > 0
@@ -241,17 +466,19 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
                     )}
 
                     {isActive && (
-                      <div className="discharge-action-box">
-                        <div className="form-field" style={{ flex: 1 }}>
+                      <div className="discharge-action-box" style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "10px" }}>
+                        <div className="form-field" style={{ width: "100%" }}>
                           <label>Actual discharge date</label>
                           <input
                             type="date"
+                            style={{ width: "100%", boxSizing: "border-box" }}
                             value={dischargeDates[booking.id] || ""}
                             onChange={(e) => setDischargeDates({ ...dischargeDates, [booking.id]: e.target.value })}
                           />
                         </div>
                         <button
                           className="btn-discharge"
+                          style={{ width: "100%" }}
                           disabled={isDischarging === booking.id}
                           onClick={() => handleDischargeClick(booking.id, booking.patient?.name)}
                         >

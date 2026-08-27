@@ -16,6 +16,7 @@ export function createBookingRoutes(
   router.post("/direct-admit", authMiddleware, requireRole(["admin", "receptionist"]), bookingController.directAdmit);
   router.post("/:id/discharge", authMiddleware, requireRole(["admin", "receptionist"]), bookingController.discharge);
   router.post("/:id/cancel", authMiddleware, requireRole(["admin", "receptionist"]), bookingController.cancel);
+  router.put("/:id", authMiddleware, requireRole(["admin", "receptionist"]), bookingController.update);
 
   return router;
 }

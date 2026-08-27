@@ -111,6 +111,22 @@ export class BookingController {
     }
   };
 
+  update = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const { admissionDate, expectedDischargeDate } = req.body;
+      if (!admissionDate || !expectedDischargeDate) {
+        res.status(400).json({ success: false, message: "admissionDate and expectedDischargeDate are required." });
+        return;
+      }
+      const result = await this.bookingService.updateBooking(id, { admissionDate, expectedDischargeDate });
+      res.status(200).json({ success: true, data: result, message: "Booking updated successfully." });
+    } catch (error: any) {
+      res.status(400).json({ success: false, message: error.message });
+    }
+  };
+
+
   getTimeline = async (req: Request, res: Response): Promise<void> => {
     try {
       const { startDate, endDate } = req.query;

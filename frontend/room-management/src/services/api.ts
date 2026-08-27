@@ -171,10 +171,26 @@ class ApiService {
     });
   }
 
+  async updateBooking(bookingId: string, data: { admissionDate: string; expectedDischargeDate: string }): Promise<Booking> {
+    return this.request<Booking>(`/bookings/${bookingId}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
   // Patients
-  async getPatients(search?: string): Promise<Patient[]> {
-    const query = search ? `?search=${encodeURIComponent(search)}` : "";
-    return this.request<Patient[]>(`/patients${query}`);
+  async getPatients(search?: string, page?: number, limit?: number): Promise<{ patients: Patient[]; total: number; page: number; totalPages: number }> {
+    const query = new URLSearchParams();
+    if (search) query.append("search", encodeURIComponent(search));
+    if (page !== undefined) query.append("page", String(page));
+    if (limit !== undefined) query.append("limit", String(limit));
+    const qStr = query.toString() ? `?${query.toString()}` : "";
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (this.token) headers["Authorization"] = `Bearer ${this.token}`;
+    const response = await fetch(`${API_BASE}/patients${qStr}`, { headers });
+    const body = await response.json();
+    if (!response.ok || body.success === false) throw new Error(body.message || "Failed to fetch patients");
+    return { patients: body.data ?? [], total: body.total ?? 0, page: body.page ?? 1, totalPages: body.totalPages ?? 1 };
   }
 
   async getPatientById(id: string): Promise<Patient> {

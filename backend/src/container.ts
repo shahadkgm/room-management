@@ -17,6 +17,7 @@ import { BcryptHasher } from "./infrastructure/security/BcryptHasher";
 import { JwtTokenService } from "./infrastructure/security/JwtTokenService";
 import { DateRangeConflictChecker } from "./infrastructure/strategies/DateRangeConflictChecker";
 import { DynamicRoomStatusCalculator } from "./infrastructure/strategies/DynamicRoomStatusCalculator";
+import { startCleanupJob } from "./jobs/cleanupDischargedPatients";
 
 import { MongoUserRepository } from "./infrastructure/repositories/MongoUserRepository";
 import { MongoRoomRepository } from "./infrastructure/repositories/MongoRoomRepository";
@@ -113,6 +114,9 @@ export async function createContainer(): Promise<AppContainer> {
   } catch (err) {
     console.warn("Seeding failed or already complete:", err);
   }
+
+  // Start background job: auto-delete patient data 2 days after discharge
+  startCleanupJob(bookingRepository, patientRepository);
 
   // 4. Inject dependencies into Service Layer (SRP + DIP)
   //    Services receive abstractions via constructor injection — never concrete classes.

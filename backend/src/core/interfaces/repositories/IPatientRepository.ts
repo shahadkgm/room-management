@@ -1,8 +1,16 @@
 import { IPatient, CreatePatientDTO, UpdatePatientDTO } from "../../models/Patient";
 
+export interface PaginatedPatients {
+  patients: IPatient[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
 export interface IPatientReader {
   findById(id: string): Promise<IPatient | null>;
   list(filter?: { search?: string }): Promise<IPatient[]>;
+  listPaginated(filter?: { search?: string; page?: number; limit?: number }): Promise<PaginatedPatients>;
 }
 
 export interface IPatientWriter {

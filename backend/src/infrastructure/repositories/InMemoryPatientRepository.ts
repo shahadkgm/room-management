@@ -1,4 +1,4 @@
-import { IPatientRepository } from "../../core/interfaces/repositories/IPatientRepository";
+import { IPatientRepository, PaginatedPatients } from "../../core/interfaces/repositories/IPatientRepository";
 import { IPatient, CreatePatientDTO, UpdatePatientDTO } from "../../core/models/Patient";
 
 export class InMemoryPatientRepository implements IPatientRepository {
@@ -23,6 +23,15 @@ export class InMemoryPatientRepository implements IPatientRepository {
     }
 
     return result.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+
+  async listPaginated(filter?: { search?: string; page?: number; limit?: number }): Promise<PaginatedPatients> {
+    const all = await this.list(filter);
+    const page = filter?.page && filter.page > 0 ? filter.page : 1;
+    const limit = filter?.limit && filter.limit > 0 ? filter.limit : 10;
+    const skip = (page - 1) * limit;
+    const patients = all.slice(skip, skip + limit);
+    return { patients, total: all.length, page, totalPages: Math.ceil(all.length / limit) };
   }
 
   async create(patient: CreatePatientDTO): Promise<IPatient> {
