@@ -1,5 +1,6 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext";
+import { MarkazLogo } from "./MarkazLogo";
 
 export type NavTab = "board" | "dashboard" | "calendar" | "patients" | "admin-rooms" | "user-management";
 
@@ -39,13 +40,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <aside className={`sidebar ${isOpen ? "mobile-open" : ""}`}>
         <div>
           <div className="sidebar-brand">
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <div className="brand-icon">🌿</div>
-              <div className="brand-info">
-                <h2>Unani Hospital</h2>
-                <p>Room Management</p>
-              </div>
-            </div>
+            <MarkazLogo size={36} textColor="#ffffff" subtitle="Room Management" />
             {onClose && (
               <button
                 className="sidebar-close-btn"

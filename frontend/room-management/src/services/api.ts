@@ -171,7 +171,7 @@ class ApiService {
     });
   }
 
-  async updateBooking(bookingId: string, data: { admissionDate: string; expectedDischargeDate: string }): Promise<Booking> {
+  async updateBooking(bookingId: string, data: { admissionDate?: string; expectedDischargeDate: string }): Promise<Booking> {
     return this.request<Booking>(`/bookings/${bookingId}`, {
       method: "PUT",
       body: JSON.stringify(data),

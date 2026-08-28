@@ -136,27 +136,35 @@ export class BookingService implements IBookingService {
     return cancelled;
   }
 
-  async updateBooking(bookingId: string, dto: { admissionDate: string; expectedDischargeDate: string }): Promise<IBooking> {
+  async updateBooking(bookingId: string, dto: { admissionDate?: string; expectedDischargeDate: string }): Promise<IBooking> {
     const booking = await this.bookingRepository.findById(bookingId);
     if (!booking) throw new Error("Booking not found.");
-    if (booking.status !== "reserved") {
-      throw new Error("Only reserved bookings can be edited. Active bookings cannot be modified.");
+    if (booking.status === "completed" || booking.status === "cancelled") {
+      throw new Error("Discharged or cancelled bookings cannot be modified.");
+    }
+
+    const effectiveAdmissionDate = dto.admissionDate || booking.admissionDate;
+    if (dto.expectedDischargeDate <= effectiveAdmissionDate) {
+      throw new Error("Expected discharge date must be after admission date.");
     }
 
     // Re-check conflict excluding the current booking
     const existingBookings = await this.bookingRepository.findByRoomId(booking.roomId);
     const others = existingBookings.filter((b) => b.id !== bookingId && b.status !== "cancelled");
-    const hasConflict = this.conflictChecker.hasConflict(dto.admissionDate, dto.expectedDischargeDate, others);
+    const hasConflict = this.conflictChecker.hasConflict(effectiveAdmissionDate, dto.expectedDischargeDate, others);
     if (hasConflict) {
-      throw new Error("Schedule conflict: The room is already booked during the new date window.");
+      throw new Error("Schedule conflict: The room is already reserved for another patient during this date extension.");
     }
 
     const todayStr = new Date().toISOString().split("T")[0];
-    const isFuture = dto.admissionDate > todayStr;
-    const newStatus = isFuture ? "reserved" : "active";
+    let newStatus = booking.status;
+    if (booking.status === "reserved") {
+      const isFuture = effectiveAdmissionDate > todayStr;
+      newStatus = isFuture ? "reserved" : "active";
+    }
 
     const updated = await this.bookingRepository.update(bookingId, {
-      admissionDate: dto.admissionDate,
+      admissionDate: effectiveAdmissionDate,
       expectedDischargeDate: dto.expectedDischargeDate,
       status: newStatus,
     });

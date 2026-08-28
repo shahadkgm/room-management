@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { MarkazEmblem } from "./MarkazLogo";
 import "./LoginPage.css";
 
 export const LoginPage: React.FC = () => {
@@ -34,15 +35,16 @@ export const LoginPage: React.FC = () => {
       <div className="login-container">
         {/* Logo Badge */}
         <div className="login-header">
-          <div className="logo-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="stethoscope-icon">
-              <path d="M4.8 2.3A.3.3 0 0 0 5 2.6v3.4a3 3 0 0 0 3 3 3 3 0 0 0 3-3V2.6a.3.3 0 0 0 .2-.3.3.3 0 0 0-.5 0v3.4a2 2 0 0 1-2 2 2 2 0 0 1-2-2V2.6a.3.3 0 0 0-.5 0z" fill="currentColor"></path>
-              <path d="M19 10v1a7 7 0 0 1-14 0v-1"></path>
-              <path d="M12 17v4"></path>
-              <circle cx="12" cy="21" r="2"></circle>
-            </svg>
+          <div style={{ display: "inline-flex", justifyContent: "center", marginBottom: "12px" }}>
+            <MarkazEmblem size={64} strokeColor="#0d9488" goldColor="#D49B3A" />
           </div>
-          <h1 className="login-title">Unani Hospital</h1>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", lineHeight: 1.15, marginBottom: "8px" }}>
+            <div style={{ display: "flex", gap: "6px", fontSize: "24px", fontWeight: 800, letterSpacing: "0.08em", color: "#0f172a" }}>
+              <span>MARKAZ</span>
+              <span style={{ color: "#D49B3A" }}>UNANI</span>
+              <span>HOSPITAL</span>
+            </div>
+          </div>
           <p className="login-subtitle">Room allocation & Patient management workspace</p>
         </div>
 

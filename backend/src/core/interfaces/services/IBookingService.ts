@@ -7,6 +7,6 @@ export interface IBookingService {
   directAdmitPatient(dto: DirectAdmissionDTO): Promise<{ booking: IBooking; patientId: string }>;
   dischargePatient(bookingId: string, dto: DischargePatientDTO): Promise<IBooking>;
   cancelBooking(bookingId: string): Promise<IBooking>;
-  updateBooking(bookingId: string, dto: { admissionDate: string; expectedDischargeDate: string }): Promise<IBooking>;
+  updateBooking(bookingId: string, dto: { admissionDate?: string; expectedDischargeDate: string }): Promise<IBooking>;
   getTimeline(startDate: string, endDate: string): Promise<PopulatedBooking[]>;
 }

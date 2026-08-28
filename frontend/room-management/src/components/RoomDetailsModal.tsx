@@ -111,18 +111,26 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
     setErrorMsg(null);
   };
 
+  const handleAddDaysToDischarge = (daysToAdd: number) => {
+    const baseDateStr = editForm.expectedDischargeDate || new Date().toISOString().split("T")[0];
+    const d = new Date(baseDateStr);
+    d.setDate(d.getDate() + daysToAdd);
+    const newDateStr = d.toISOString().split("T")[0];
+    setEditForm((prev) => ({ ...prev, expectedDischargeDate: newDateStr }));
+  };
+
   const handleEditSave = async () => {
     if (!editingBookingId) return;
     try {
       setIsSavingEdit(true);
       setErrorMsg(null);
       await api.updateBooking(editingBookingId, editForm);
-      setSuccessMsg("Reservation dates updated successfully.");
+      setSuccessMsg("Stay & discharge date updated successfully.");
       setEditingBookingId(null);
       onRefresh();
       await fetchDetails();
     } catch (err: any) {
-      setErrorMsg(err.message || "Failed to update reservation.");
+      setErrorMsg(err.message || "Failed to update stay details.");
     } finally {
       setIsSavingEdit(false);
     }
@@ -312,19 +320,21 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
                           {isActive ? "Active" : "Reserved"}
                         </span>
 
-                        {/* Edit & Cancel buttons for RESERVED bookings */}
-                        {isReserved && !isEditing && !isVisitor && (
+                        {/* Edit & Cancel buttons */}
+                        {!isEditing && !isVisitor && (
                           <>
                             <button
-                              id={`edit-reservation-${booking.id}`}
-                              title="Edit reservation dates"
+                              id={`edit-stay-${booking.id}`}
+                              title={isActive ? "Extend patient stay / change discharge date" : "Edit reservation dates"}
                               onClick={() => handleEditClick(booking)}
                               style={{
-                                background: "linear-gradient(135deg, #3b82f6, #2563eb)",
+                                background: isActive
+                                  ? "linear-gradient(135deg, #0d9488, #0f766e)"
+                                  : "linear-gradient(135deg, #3b82f6, #2563eb)",
                                 color: "#fff",
                                 border: "none",
                                 borderRadius: "7px",
-                                padding: "4px 10px",
+                                padding: "5px 12px",
                                 fontSize: "11.5px",
                                 fontWeight: 600,
                                 cursor: "pointer",
@@ -333,42 +343,45 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
                                 gap: "4px",
                               }}
                             >
-                              ✏️ Edit
+                              {isActive ? "✏️ Extend Stay" : "✏️ Edit"}
                             </button>
-                            <button
-                              id={`cancel-reservation-${booking.id}`}
-                              title="Cancel reservation"
-                              onClick={() =>
-                                setConfirmState({
-                                  open: true,
-                                  bookingId: booking.id,
-                                  patientName: booking.patient?.name || "this patient",
-                                  action: "cancel",
-                                })
-                              }
-                              style={{
-                                background: "linear-gradient(135deg, #ef4444, #dc2626)",
-                                color: "#fff",
-                                border: "none",
-                                borderRadius: "7px",
-                                padding: "4px 10px",
-                                fontSize: "11.5px",
-                                fontWeight: 600,
-                                cursor: "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "4px",
-                              }}
-                            >
-                              🗑️ Cancel
-                            </button>
+
+                            {isReserved && (
+                              <button
+                                id={`cancel-reservation-${booking.id}`}
+                                title="Cancel reservation"
+                                onClick={() =>
+                                  setConfirmState({
+                                    open: true,
+                                    bookingId: booking.id,
+                                    patientName: booking.patient?.name || "this patient",
+                                    action: "cancel",
+                                  })
+                                }
+                                style={{
+                                  background: "linear-gradient(135deg, #ef4444, #dc2626)",
+                                  color: "#fff",
+                                  border: "none",
+                                  borderRadius: "7px",
+                                  padding: "5px 10px",
+                                  fontSize: "11.5px",
+                                  fontWeight: 600,
+                                  cursor: "pointer",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "4px",
+                                }}
+                              >
+                                🗑️ Cancel
+                              </button>
+                            )}
                           </>
                         )}
                       </div>
                     </div>
 
-                    {/* Inline Edit Form for Reserved Booking */}
-                    {isReserved && isEditing && (
+                    {/* Inline Edit Form for Active / Reserved Booking */}
+                    {isEditing && (
                       <div
                         style={{
                           background: "#f0fdf4",
@@ -381,28 +394,72 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
                           gap: "10px",
                         }}
                       >
-                        <div style={{ fontWeight: 700, fontSize: "13px", color: "#065f46" }}>✏️ Edit Reservation Dates</div>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div style={{ fontWeight: 700, fontSize: "13px", color: "#065f46" }}>
+                            {isActive ? "✏️ Extend Patient Stay / Change Discharge Date" : "✏️ Edit Reservation Dates"}
+                          </div>
+                        </div>
+
                         <div className="responsive-form-grid">
                           <div className="form-field">
-                            <label style={{ fontSize: "12px" }}>Admission Date</label>
+                            <label style={{ fontSize: "12px" }}>
+                              Admission Date {isActive ? "(Locked)" : ""}
+                            </label>
                             <input
                               type="date"
-                              style={{ width: "100%", boxSizing: "border-box" }}
+                              disabled={isActive}
+                              style={{ width: "100%", boxSizing: "border-box", opacity: isActive ? 0.75 : 1, background: isActive ? "#f8fafc" : "#fff" }}
                               value={editForm.admissionDate}
                               onChange={(e) => setEditForm({ ...editForm, admissionDate: e.target.value })}
                             />
                           </div>
                           <div className="form-field">
-                            <label style={{ fontSize: "12px" }}>Expected Discharge</label>
+                            <label style={{ fontSize: "12px", fontWeight: 700, color: "#0f766e" }}>
+                              Expected Discharge Date
+                            </label>
                             <input
                               type="date"
-                              style={{ width: "100%", boxSizing: "border-box" }}
+                              style={{ width: "100%", boxSizing: "border-box", borderColor: "#0d9488" }}
                               value={editForm.expectedDischargeDate}
                               onChange={(e) => setEditForm({ ...editForm, expectedDischargeDate: e.target.value })}
                             />
                           </div>
                         </div>
-                        <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+
+                        {/* Quick Extension Presets */}
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", paddingTop: "4px" }}>
+                          <span style={{ fontSize: "11.5px", fontWeight: 600, color: "#475569" }}>Quick Extend:</span>
+                          <button
+                            type="button"
+                            onClick={() => handleAddDaysToDischarge(1)}
+                            style={{ padding: "3px 8px", fontSize: "11.5px", borderRadius: "5px", border: "1px solid #a7f3d0", background: "#fff", color: "#047857", cursor: "pointer", fontWeight: 600 }}
+                          >
+                            +1 Day
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleAddDaysToDischarge(2)}
+                            style={{ padding: "3px 8px", fontSize: "11.5px", borderRadius: "5px", border: "1px solid #a7f3d0", background: "#fff", color: "#047857", cursor: "pointer", fontWeight: 600 }}
+                          >
+                            +2 Days
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleAddDaysToDischarge(3)}
+                            style={{ padding: "3px 8px", fontSize: "11.5px", borderRadius: "5px", border: "1px solid #0d9488", background: "#ecfdf5", color: "#0f766e", cursor: "pointer", fontWeight: 700 }}
+                          >
+                            +3 Days ⭐
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleAddDaysToDischarge(7)}
+                            style={{ padding: "3px 8px", fontSize: "11.5px", borderRadius: "5px", border: "1px solid #a7f3d0", background: "#fff", color: "#047857", cursor: "pointer", fontWeight: 600 }}
+                          >
+                            +1 Week
+                          </button>
+                        </div>
+
+                        <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", marginTop: "4px" }}>
                           <button
                             onClick={() => setEditingBookingId(null)}
                             style={{
@@ -422,17 +479,18 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
                             onClick={handleEditSave}
                             disabled={isSavingEdit}
                             style={{
-                              padding: "6px 14px",
+                              padding: "6px 16px",
                               borderRadius: "7px",
                               border: "none",
                               background: "linear-gradient(135deg, #0d9488, #0f766e)",
                               color: "#fff",
-                              fontWeight: 600,
+                              fontWeight: 700,
                               cursor: isSavingEdit ? "not-allowed" : "pointer",
                               fontSize: "12.5px",
+                              boxShadow: "0 2px 6px rgba(13, 148, 136, 0.3)",
                             }}
                           >
-                            {isSavingEdit ? "Saving..." : "Save Changes"}
+                            {isSavingEdit ? "Saving..." : "Save New Discharge Date"}
                           </button>
                         </div>
                       </div>
