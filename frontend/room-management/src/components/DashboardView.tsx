@@ -1,5 +1,6 @@
 import React from "react";
 import type { DashboardStats, Booking, Room } from "../types";
+import { useAuth } from "../context/AuthContext";
 
 interface DashboardViewProps {
   stats: DashboardStats | null;
@@ -14,6 +15,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onOpenAdmission,
   onSelectRoom,
 }) => {
+  const { role } = useAuth();
+  const isVisitor = role === "visitor";
+
   if (!stats) {
     return <div style={{ padding: "40px", color: "#64748b", textAlign: "center" }}>Loading dashboard statistics...</div>;
   }
@@ -64,7 +68,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-          {onOpenAdmission && (
+          {onOpenAdmission && !isVisitor && (
             <button className="btn-primary" onClick={onOpenAdmission}>
               <span>Admit patient →</span>
             </button>
@@ -238,7 +242,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="dashboard-card">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
             <h3 style={{ fontSize: "16px", fontWeight: 700, color: "#0f172a", margin: 0 }}>Rooms ready for admission</h3>
-            <span style={{ fontSize: "13px", color: "#0d9488", fontWeight: 600, cursor: "pointer" }}>Open room board →</span>
+            {!isVisitor && <span style={{ fontSize: "13px", color: "#0d9488", fontWeight: 600, cursor: "pointer" }}>Open room board →</span>}
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "16px" }}>

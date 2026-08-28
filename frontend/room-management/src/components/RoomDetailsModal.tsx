@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import type { RoomWithBookings, Booking } from "../types";
 import { api } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 import { ConfirmModal } from "./ConfirmModal";
 
 interface RoomDetailsModalProps {
@@ -16,6 +17,8 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
   onRefresh,
   onOpenAddBooking,
 }) => {
+  const { role } = useAuth();
+  const isVisitor = role === "visitor";
   const [roomData, setRoomData] = useState<RoomWithBookings | null>(null);
   const [loading, setLoading] = useState(true);
   const [dischargeDates, setDischargeDates] = useState<{ [bookingId: string]: string }>({});
@@ -241,32 +244,36 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
               <h4 style={{ fontSize: "14px", fontWeight: 700, color: "#0f172a", margin: 0 }}>
                 Active &amp; Upcoming ({allActiveUpcoming.length})
               </h4>
-              <button
-                style={{
-                  background: "linear-gradient(135deg, #0d9488, #0f766e)",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "8px",
-                  padding: "7px 14px",
-                  fontSize: "12.5px",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "5px",
-                }}
-                onClick={() => onOpenAddBooking(roomData.id)}
-              >
-                📅 + Add Booking
-              </button>
+              {!isVisitor && (
+                <button
+                  style={{
+                    background: "linear-gradient(135deg, #0d9488, #0f766e)",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "8px",
+                    padding: "7px 14px",
+                    fontSize: "12.5px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "5px",
+                  }}
+                  onClick={() => onOpenAddBooking(roomData.id)}
+                >
+                  📅 + Add Booking
+                </button>
+              )}
             </div>
 
             {allActiveUpcoming.length === 0 ? (
               <div style={{ textAlign: "center", padding: "30px 10px", color: "#64748b", background: "#f8fafc", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
-                <p style={{ marginBottom: "14px" }}>No active or reserved bookings for this room.</p>
-                <button className="btn-primary" style={{ margin: "0 auto", display: "inline-flex" }} onClick={() => onOpenAddBooking(roomData.id)}>
-                  + Admit or Reserve Patient
-                </button>
+                <p style={{ marginBottom: isVisitor ? "0" : "14px" }}>No active or reserved bookings for this room.</p>
+                {!isVisitor && (
+                  <button className="btn-primary" style={{ margin: "0 auto", display: "inline-flex" }} onClick={() => onOpenAddBooking(roomData.id)}>
+                    + Admit or Reserve Patient
+                  </button>
+                )}
               </div>
             ) : (
               allActiveUpcoming.map((booking: Booking) => {
@@ -306,7 +313,7 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
                         </span>
 
                         {/* Edit & Cancel buttons for RESERVED bookings */}
-                        {isReserved && !isEditing && (
+                        {isReserved && !isEditing && !isVisitor && (
                           <>
                             <button
                               id={`edit-reservation-${booking.id}`}
@@ -465,7 +472,7 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
                       </div>
                     )}
 
-                    {isActive && (
+                    {isActive && !isVisitor && (
                       <div className="discharge-action-box" style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "10px" }}>
                         <div className="form-field" style={{ width: "100%" }}>
                           <label>Actual discharge date</label>

@@ -51,6 +51,8 @@ export class AuthService implements IAuthService {
       searchEmail = "admin@unani.com";
     } else if (searchEmail === "receptionist" || searchEmail === "staff") {
       searchEmail = "receptionist@unani.com";
+    } else if (searchEmail === "visitor" || searchEmail === "guest") {
+      searchEmail = "visitor@unani.com";
     }
 
     let user = await this.userRepository.findByEmail(searchEmail);
@@ -78,7 +80,8 @@ export class AuthService implements IAuthService {
     if (!isMatch) {
       if (
         (user.email === "admin@unani.com" && (dto.password === "admin" || dto.password === "admin123")) ||
-        (user.email === "receptionist@unani.com" && (dto.password === "receptionist" || dto.password === "rec123"))
+        (user.email === "receptionist@unani.com" && (dto.password === "receptionist" || dto.password === "rec123")) ||
+        (user.email === "visitor@unani.com" && (dto.password === "visitor" || dto.password === "visitor123" || dto.password === "guest"))
       ) {
         isMatch = true;
       }

@@ -22,8 +22,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const switchUser = async (targetRole: UserRole) => {
     setIsLoading(true);
     try {
-      const email = targetRole === "admin" ? "admin@unani.com" : "receptionist@unani.com";
-      const pass = targetRole === "admin" ? "admin" : "receptionist";
+      let email = "receptionist@unani.com";
+      let pass = "receptionist";
+      if (targetRole === "admin") {
+        email = "admin@unani.com";
+        pass = "admin";
+      } else if (targetRole === "visitor") {
+        email = "visitor@unani.com";
+        pass = "visitor";
+      }
       const res = await api.login(email, pass);
       setUser(res.user);
       setToken(res.token);

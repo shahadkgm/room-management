@@ -1,10 +1,10 @@
-export type UserRole = "admin" | "receptionist";
+export type UserRole = "admin" | "receptionist" | "visitor";
 
 export interface User {
   id: string;
   name: string;
   email: string;
-  role: "admin" | "receptionist";
+  role: "admin" | "receptionist" | "visitor";
   isAllowed: boolean;
 }
 

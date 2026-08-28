@@ -45,9 +45,11 @@ export const Navbar: React.FC<NavbarProps> = ({ title, stats, onOpenAdmission, o
           <span>{role.charAt(0).toUpperCase() + role.slice(1)} | {todayFormatted}</span>
         </div>
 
-        <button className="btn-primary" onClick={onOpenAdmission}>
-          <span>+ New Admission</span>
-        </button>
+        {role !== "visitor" && (
+          <button className="btn-primary" onClick={onOpenAdmission}>
+            <span>+ New Admission</span>
+          </button>
+        )}
       </div>
     </header>
   );

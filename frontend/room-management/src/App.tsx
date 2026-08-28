@@ -51,12 +51,22 @@ const MainAppContent: React.FC = () => {
     }
   }, [user, loadData]);
 
+  const isVisitor = user?.role === "visitor";
+
+  useEffect(() => {
+    if (isVisitor && activeTab !== "dashboard" && activeTab !== "calendar") {
+      setActiveTab("dashboard");
+    }
+  }, [isVisitor, activeTab]);
+
   const handleOpenAdmissionWithRoom = (roomId: string) => {
+    if (isVisitor) return;
     setAdmissionPreselectedRoom(roomId);
     setIsAdmissionOpen(true);
   };
 
   const handleOpenGeneralAdmission = () => {
+    if (isVisitor) return;
     setAdmissionPreselectedRoom(undefined);
     setIsAdmissionOpen(true);
   };

@@ -131,7 +131,33 @@ export const UserManagementView: React.FC = () => {
                     <td style={{ fontWeight: 600, color: "#0f172a" }}>{u.name}</td>
                     <td style={{ color: "#475569" }}>{u.email}</td>
                     <td>
-                      <span className={`badge badge-${u.role === "admin" ? "active" : "reserved"}`}>
+                      <span
+                        style={{
+                          fontSize: "11px",
+                          fontWeight: 700,
+                          padding: "3px 10px",
+                          borderRadius: "20px",
+                          background:
+                            u.role === "admin"
+                              ? "#ecfdf5"
+                              : u.role === "visitor"
+                              ? "#f3e8ff"
+                              : "#fffbeb",
+                          color:
+                            u.role === "admin"
+                              ? "#059669"
+                              : u.role === "visitor"
+                              ? "#9333ea"
+                              : "#d97706",
+                          border: `1px solid ${
+                            u.role === "admin"
+                              ? "#a7f3d0"
+                              : u.role === "visitor"
+                              ? "#d8b4fe"
+                              : "#fde68a"
+                          }`,
+                        }}
+                      >
                         {u.role.toUpperCase()}
                       </span>
                     </td>

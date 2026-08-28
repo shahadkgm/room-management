@@ -6,7 +6,7 @@ const userMongooseSchema = new Schema<IUser>(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true, lowercase: true },
     passwordHash: { type: String, required: true },
-    role: { type: String, enum: ["admin", "receptionist"], required: true, default: "receptionist" },
+    role: { type: String, enum: ["admin", "receptionist", "visitor"], required: true, default: "receptionist" },
     isAllowed: { type: Boolean, default: false },
   },
   {
