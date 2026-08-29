@@ -8,9 +8,9 @@ export async function seedInitialData(
   const users = await userRepo.list();
   if (users.length === 0) {
     console.log("🌱 Seeding default users (Admin & Receptionist & Visitor)...");
-    const adminPass = await passwordHasher.hash("admin123");
-    const recPass = await passwordHasher.hash("rec123");
-    const visPass = await passwordHasher.hash("visitor123");
+    const adminPass = await passwordHasher.hash("3535");
+    const recPass = await passwordHasher.hash("3535");
+    const visPass = await passwordHasher.hash("3535");
 
     await userRepo.create({
       name: "Dr. Hakim Al-Attar (Admin)",
