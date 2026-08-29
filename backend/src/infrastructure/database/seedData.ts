@@ -8,7 +8,7 @@ export async function seedInitialData(
   const users = await userRepo.list();
   if (users.length === 0) {
     console.log("🌱 Seeding default users (Admin & Receptionist & Visitor)...");
-    const adminPass = await passwordHasher.hash("3535");
+    const adminPass = await passwordHasher.hash("admin3536");
     const recPass = await passwordHasher.hash("3535");
     const visPass = await passwordHasher.hash("3535");
 

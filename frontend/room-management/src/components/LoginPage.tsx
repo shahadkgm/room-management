@@ -68,7 +68,7 @@ export const LoginPage: React.FC = () => {
                 <input
                   id="username-email"
                   type="text"
-                  placeholder="admin, receptionist, or visitor"
+                  placeholder="receptionist or visitor"
                   value={usernameOrEmail}
                   onChange={(e) => setUsernameOrEmail(e.target.value)}
                   autoComplete="username"
