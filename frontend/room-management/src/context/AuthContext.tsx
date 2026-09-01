@@ -19,26 +19,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [token, setToken] = useState<string | null>(api.getToken());
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const switchUser = async (targetRole: UserRole) => {
-    setIsLoading(true);
-    try {
-      let email = "receptionist@unani.com";
-      let pass = "receptionist";
-      if (targetRole === "admin") {
-        email = "admin@unani.com";
-        pass = "admin";
-      } else if (targetRole === "visitor") {
-        email = "visitor@unani.com";
-        pass = "visitor";
-      }
-      const res = await api.login(email, pass);
-      setUser(res.user);
-      setToken(res.token);
-    } catch (e) {
-      console.error("Failed to switch role:", e);
-    } finally {
-      setIsLoading(false);
-    }
+  const switchUser = async (_targetRole: UserRole) => {
+    // Role switching requires authenticating with that user's actual credentials
+    logout();
   };
 
   useEffect(() => {

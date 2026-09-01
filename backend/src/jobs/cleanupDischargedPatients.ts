@@ -1,7 +1,7 @@
 import { IBookingRepository } from "../core/interfaces/repositories/IBookingRepository";
 import { IPatientRepository } from "../core/interfaces/repositories/IPatientRepository";
 
-const DAYS_AFTER_DISCHARGE = 2;
+const DAYS_AFTER_DISCHARGE = 40;
 const INTERVAL_MS = 60 * 60 * 1000; // every 1 hour
 
 export function startCleanupJob(

@@ -5,7 +5,10 @@ export class JwtTokenService implements ITokenService {
   private readonly secretKey: string;
   private readonly expiresIn: string;
 
-  constructor(secretKey: string = process.env.JWT_SECRET || "default_jwt_secret_key_unani", expiresIn: string = "7d") {
+  constructor(secretKey: string = process.env.JWT_SECRET || "", expiresIn: string = process.env.JWT_EXPIRES_IN || "7d") {
+    if (!secretKey) {
+      throw new Error("JWT secret key must be defined in environment configuration.");
+    }
     this.secretKey = secretKey;
     this.expiresIn = expiresIn;
   }

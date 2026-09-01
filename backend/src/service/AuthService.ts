@@ -47,12 +47,17 @@ export class AuthService implements IAuthService {
   async login(dto: LoginDTO): Promise<AuthResponseDTO> {
     let searchEmail = dto.email.trim().toLowerCase();
 
-    if (searchEmail === "admin") {
-      searchEmail = "admin@unani.com";
-    } else if (searchEmail === "receptionist" || searchEmail === "staff") {
-      searchEmail = "receptionist@unani.com";
-    } else if (searchEmail === "visitor" || searchEmail === "guest") {
-      searchEmail = "visitor@unani.com";
+    // Map common role shortcuts to configured emails from environment variables
+    const adminEmail = (process.env.ADMIN_EMAIL || "").trim().toLowerCase();
+    const recEmail = (process.env.RECEPTIONIST_EMAIL || "").trim().toLowerCase();
+    const visEmail = (process.env.VISITOR_EMAIL || "").trim().toLowerCase();
+
+    if (searchEmail === "admin" && adminEmail) {
+      searchEmail = adminEmail;
+    } else if ((searchEmail === "receptionist" || searchEmail === "staff") && recEmail) {
+      searchEmail = recEmail;
+    } else if ((searchEmail === "visitor" || searchEmail === "guest") && visEmail) {
+      searchEmail = visEmail;
     }
 
     let user = await this.userRepository.findByEmail(searchEmail);
@@ -74,17 +79,7 @@ export class AuthService implements IAuthService {
       throw new Error("Access Denied: Your account is not allowed to sign in. Please contact system administrator.");
     }
 
-    let isMatch = await this.passwordHasher.compare(dto.password, user.passwordHash);
-    
-    if (!isMatch) {
-      if (
-        (user.email === "admin@unani.com" && (dto.password === "3535" || dto.password === "admin123")) ||
-        (user.email === "receptionist@unani.com" && (dto.password === "3535" || dto.password === "rec123")) ||
-        (user.email === "visitor@unani.com" && (dto.password === "3535" || dto.password === "visitor123" || dto.password === "guest"))
-      ) {
-        isMatch = true;
-      }
-    }
+    const isMatch = await this.passwordHasher.compare(dto.password, user.passwordHash);
 
     if (!isMatch) {
       throw new Error("Invalid username/email or password.");

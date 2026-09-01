@@ -5,52 +5,44 @@ export async function seedInitialData(
   userRepo: IUserRepository,
   passwordHasher: IPasswordHasher
 ) {
-  const users = await userRepo.list();
-  if (users.length === 0) {
-    console.log("🌱 Seeding default users (Admin & Receptionist & Visitor)...");
-    const adminPass = await passwordHasher.hash("admin3536");
-    const recPass = await passwordHasher.hash("3535");
-    const visPass = await passwordHasher.hash("3535");
+  const seedConfigs = [
+    {
+      name: process.env.ADMIN_NAME || "Administrator",
+      email: (process.env.ADMIN_EMAIL || "").trim().toLowerCase(),
+      password: process.env.ADMIN_PASSWORD,
+      role: "admin" as const,
+    },
+    {
+      name: process.env.RECEPTIONIST_NAME || "Receptionist",
+      email: (process.env.RECEPTIONIST_EMAIL || "").trim().toLowerCase(),
+      password: process.env.RECEPTIONIST_PASSWORD,
+      role: "receptionist" as const,
+    },
+    {
+      name: process.env.VISITOR_NAME || "Visitor",
+      email: (process.env.VISITOR_EMAIL || "").trim().toLowerCase(),
+      password: process.env.VISITOR_PASSWORD,
+      role: "visitor" as const,
+    },
+  ];
 
-    await userRepo.create({
-      name: "Dr. Hakim Al-Attar (Admin)",
-      email: "admin@unani.com",
-      passwordHash: adminPass,
-      role: "admin",
-      isAllowed: true,
-    });
+  for (const config of seedConfigs) {
+    if (!config.email || !config.password) {
+      continue;
+    }
 
-    await userRepo.create({
-      name: "Shahad (Receptionist)",
-      email: "receptionist@unani.com",
-      passwordHash: recPass,
-      role: "receptionist",
-      isAllowed: true,
-    });
-
-    await userRepo.create({
-      name: "Hospital Visitor",
-      email: "visitor@unani.com",
-      passwordHash: visPass,
-      role: "visitor",
-      isAllowed: true,
-    });
-
-    console.log("✅ Seed users populated successfully.");
-  } else {
-    // If users already exist, ensure the visitor user is present
-    const visitor = await userRepo.findByEmail("visitor@unani.com");
-    if (!visitor) {
-      console.log("🌱 Seeding missing visitor user...");
-      const visPass = await passwordHasher.hash("visitor123");
+    const existing = await userRepo.findByEmail(config.email);
+    if (!existing) {
+      console.log(`🌱 Seeding initial ${config.role} user (${config.email})...`);
+      const passwordHash = await passwordHasher.hash(config.password);
       await userRepo.create({
-        name: "Hospital Visitor",
-        email: "visitor@unani.com",
-        passwordHash: visPass,
-        role: "visitor",
+        name: config.name,
+        email: config.email,
+        passwordHash,
+        role: config.role,
         isAllowed: true,
       });
-      console.log("✅ Seed visitor user populated successfully.");
+      console.log(`✅ Seed ${config.role} user populated successfully.`);
     }
   }
 }

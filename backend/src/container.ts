@@ -100,22 +100,28 @@ export async function createContainer(): Promise<AppContainer> {
 
   // 3. Instantiate Security & Strategy Adapters
   //    (ISP: each adapter only implements the interface its consumer needs)
-  const passwordHasher: IPasswordHasher = new BcryptHasher(10);
+  const saltRounds = Number(process.env.BCRYPT_SALT_ROUNDS) || 10;
+  const passwordHasher: IPasswordHasher = new BcryptHasher(saltRounds);
+
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) {
+    throw new Error("JWT_SECRET is not configured in .env");
+  }
   const tokenService: ITokenService = new JwtTokenService(
-    process.env.JWT_SECRET || "unani_hospital_jwt_secret_key",
-    "7d"
+    jwtSecret,
+    process.env.JWT_EXPIRES_IN || "7d"
   );
   const conflictChecker: IBookingConflictChecker = new DateRangeConflictChecker();
   const statusCalculator: IRoomStatusCalculator = new DynamicRoomStatusCalculator();
 
-  // Seed default users (Admin & Receptionist) if missing
+  // Seed default users from environment configuration if missing
   try {
     await seedInitialData(userRepository, passwordHasher);
   } catch (err) {
     console.warn("Seeding failed or already complete:", err);
   }
 
-  // Start background job: auto-delete patient data 2 days after discharge
+  // Start background job: cleanup discharged patients
   startCleanupJob(bookingRepository, patientRepository);
 
   // 4. Inject dependencies into Service Layer (SRP + DIP)
