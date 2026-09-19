@@ -14,6 +14,9 @@ import { errorHandler } from "./middleware/errorHandler";
 export function createApp(container: AppContainer): Express {
   const app = express();
 
+  // Trust proxy for reverse proxy environments like Render, Heroku, Vercel
+  app.set("trust proxy", 1);
+
   // Security headers (disable crossOriginResourcePolicy so CORS works with Vercel)
   app.use(helmet({ crossOriginResourcePolicy: false }));
   const authLimiter = rateLimit({
@@ -22,6 +25,7 @@ export function createApp(container: AppContainer): Express {
     message: { success: false, message: "Too many authentication requests from this IP, please try again later." },
     standardHeaders: true,
     legacyHeaders: false,
+    validate: { xForwardedForHeader: false },
   });
 
   // CORS — allow all origins (Vercel preview/production, localhost, etc.)
