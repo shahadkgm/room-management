@@ -1,6 +1,14 @@
 import type { Room, RoomWithBookings, Patient, Booking, DashboardStats, User } from "../types";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+function getBaseUrl(): string {
+  const envUrl = (import.meta.env.VITE_API_URL || "http://localhost:5000/api").trim().replace(/\/+$/, "");
+  if (!envUrl.endsWith("/api")) {
+    return `${envUrl}/api`;
+  }
+  return envUrl;
+}
+
+const API_BASE = getBaseUrl();
 
 class ApiService {
   private token: string | null = localStorage.getItem("room_harmony_token");
@@ -34,7 +42,18 @@ class ApiService {
         headers,
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get("content-type");
+      let data: any;
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        if (!response.ok) {
+          throw new Error(`Server error (${response.status}): ${text.slice(0, 150) || response.statusText}`);
+        }
+        data = text;
+      }
+
       if (!response.ok || data.success === false) {
         throw new Error(data.message || `Request failed with status ${response.status}`);
       }
@@ -188,7 +207,14 @@ class ApiService {
     const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (this.token) headers["Authorization"] = `Bearer ${this.token}`;
     const response = await fetch(`${API_BASE}/patients${qStr}`, { headers });
-    const body = await response.json();
+    const contentType = response.headers.get("content-type");
+    let body: any;
+    if (contentType && contentType.includes("application/json")) {
+      body = await response.json();
+    } else {
+      const text = await response.text();
+      throw new Error(`Failed to fetch patients (${response.status}): ${text.slice(0, 150) || response.statusText}`);
+    }
     if (!response.ok || body.success === false) throw new Error(body.message || "Failed to fetch patients");
     return { patients: body.data ?? [], total: body.total ?? 0, page: body.page ?? 1, totalPages: body.totalPages ?? 1 };
   }
