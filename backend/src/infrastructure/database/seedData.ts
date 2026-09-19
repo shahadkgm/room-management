@@ -31,10 +31,11 @@ export async function seedInitialData(
       continue;
     }
 
+    const passwordHash = await passwordHasher.hash(config.password);
     const existing = await userRepo.findByEmail(config.email);
+
     if (!existing) {
       console.log(`🌱 Seeding initial ${config.role} user (${config.email})...`);
-      const passwordHash = await passwordHasher.hash(config.password);
       await userRepo.create({
         name: config.name,
         email: config.email,
@@ -43,6 +44,15 @@ export async function seedInitialData(
         isAllowed: true,
       });
       console.log(`✅ Seed ${config.role} user populated successfully.`);
+    } else {
+      console.log(`🔄 Syncing credentials & access for ${config.role} (${config.email})...`);
+      await userRepo.update(existing.id, {
+        name: config.name,
+        passwordHash,
+        role: config.role,
+        isAllowed: true,
+      });
+      console.log(`✅ ${config.role} user credentials synchronized.`);
     }
   }
 }

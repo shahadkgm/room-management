@@ -9,7 +9,7 @@ export class AuthService implements IAuthService {
     private readonly userRepository: IUserRepository,
     private readonly passwordHasher: IPasswordHasher,
     private readonly tokenService: ITokenService
-  ) {}
+  ) { }
 
   async register(dto: RegisterUserDTO): Promise<AuthResponseDTO> {
     const existing = await this.userRepository.findByEmail(dto.email);
@@ -52,9 +52,15 @@ export class AuthService implements IAuthService {
     const recEmail = (process.env.RECEPTIONIST_EMAIL || "").trim().toLowerCase();
     const visEmail = (process.env.VISITOR_EMAIL || "").trim().toLowerCase();
 
-    if (searchEmail === "admin" && adminEmail) {
+    if ((searchEmail === "admin" || searchEmail === "administrator") && adminEmail) {
       searchEmail = adminEmail;
-    } else if ((searchEmail === "receptionist" || searchEmail === "staff") && recEmail) {
+    } else if (
+      (searchEmail === "receptionist" ||
+        searchEmail === "reciptionist" ||
+        searchEmail === "reception" ||
+        searchEmail === "staff") &&
+      recEmail
+    ) {
       searchEmail = recEmail;
     } else if ((searchEmail === "visitor" || searchEmail === "guest") && visEmail) {
       searchEmail = visEmail;
@@ -66,7 +72,8 @@ export class AuthService implements IAuthService {
       user = allUsers.find(
         (u) =>
           u.email.toLowerCase() === searchEmail ||
-          u.name.toLowerCase().includes(searchEmail)
+          u.name.toLowerCase().includes(searchEmail) ||
+          u.role.toLowerCase() === searchEmail
       ) || null;
     }
 
